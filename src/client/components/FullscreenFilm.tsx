@@ -35,6 +35,12 @@ async function getRandomBadFilm(): Promise<Film> {
 	return response.data as Film;
 }
 
+function getRatingColor(rating: number): string {
+	if (rating >= 61) return "#00ce7a";
+	if (rating >= 40) return "#ffbd3f";
+	return "#ff6874";
+}
+
 export function FullscreenFilm({ film, onClose }: Props) {
 	const [isClosing, setIsClosing] = useState(false);
 	const [currentFilm, setCurrentFilm] = useState(film);
@@ -137,6 +143,31 @@ export function FullscreenFilm({ film, onClose }: Props) {
 							{currentFilm.vote_count} votes
 						</div>
 					</div>
+
+					{(currentFilm.metacritic_rating !== 0 ||
+						currentFilm.metacritic_vote_count !== "0") && (
+						<div id="metacritic-rating">
+							<div class="rating-row">
+								<img
+									src="/content/images/png/metacritic.png"
+									alt="Metacritic:"
+								/>
+								<div
+									id="metacritic-rating-value"
+									style={{
+										color: getRatingColor(
+											currentFilm.metacritic_rating || 0
+										),
+									}}
+								>
+									{currentFilm.metacritic_rating}
+								</div>
+							</div>
+							<div class="vote-count">
+								{currentFilm.metacritic_vote_count} critics
+							</div>
+						</div>
+					)}
 				</div>
 
 				<div class="buttons">
