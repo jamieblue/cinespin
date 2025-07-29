@@ -14,6 +14,13 @@ type Props = {
 	onClose: () => void;
 };
 
+async function getRandomFilm(): Promise<Film> {
+	const response = await axios.get(
+		"http://localhost:3001/api/tmdb/random-film"
+	);
+	return response.data as Film;
+}
+
 async function getRandomGoodFilm(): Promise<Film> {
 	const response = await axios.get(
 		"http://localhost:3001/api/tmdb/random-good-film"
@@ -52,7 +59,7 @@ export function FullscreenFilm({ film, onClose }: Props) {
 				break;
 			case RandomFilmType.Neutral:
 			default:
-				next = await getRandomGoodFilm(); // Default to good film
+				next = await getRandomFilm(); // Default to good film
 				break;
 		}
 
@@ -112,7 +119,9 @@ export function FullscreenFilm({ film, onClose }: Props) {
 								: "N/A"}
 						</div>
 						<div class="vote-count">
-							({currentFilm.imdb_vote_count} votes)
+							{currentFilm.imdb_rating !== 0
+								? `${currentFilm.imdb_vote_count} votes`
+								: ""}
 						</div>
 					</div>
 
@@ -125,21 +134,26 @@ export function FullscreenFilm({ film, onClose }: Props) {
 							{currentFilm.vote_average.toFixed(1)}
 						</div>
 						<div class="vote-count">
-							({currentFilm.vote_count} votes)
+							{currentFilm.vote_count} votes
 						</div>
 					</div>
 				</div>
 
 				<div class="buttons">
 					<button
+						type="button"
 						onClick={() => handleRandomFilm(RandomFilmType.Good)}
 					>
 						<i class="fa-solid fa-thumbs-up"></i> Random Good Film
 					</button>
-					<button>
+					<button
+						type="button"
+						onClick={() => handleRandomFilm(RandomFilmType.Neutral)}
+					>
 						<i class="fa-solid fa-rotate"></i> Random Film
 					</button>
 					<button
+						type="button"
 						onClick={() => handleRandomFilm(RandomFilmType.Bad)}
 					>
 						<i class="fa-solid fa-thumbs-down"></i> Random Bad Film

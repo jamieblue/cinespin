@@ -17,54 +17,26 @@ const tmdbClient = axios.create({
 	},
 });
 
-export async function getRandomGoodFilm(): Promise<Film> {
+export async function getRandomFilm(
+	rating: number | null,
+	voteCount: number | null,
+	aboveThreshold: boolean | null
+): Promise<Film> {
+	let voteAverageKey = "vote_average.gte";
+	if (aboveThreshold != null && !aboveThreshold) {
+		voteAverageKey = "vote_average.lte";
+	}
+
 	const baseParams = {
-		"vote_average.gte": 7.5,
-		"vote_count.gte": 500,
+		[voteAverageKey]: rating ?? 5,
+		"vote_count.gte": voteCount ?? 500,
 		sort_by: "vote_average.desc",
 		include_adult: false,
 		include_video: false,
 		page: 1,
 	};
 
-	const firstPage = await tmdbClient.get("/discover/movie", {
-		params: baseParams,
-	});
-
-	const totalPages = Math.min(firstPage.data.total_pages, 500); // API caps at 500
-	const randomPage = Math.floor(Math.random() * totalPages) + 1;
-
-	const randomPageRes = await tmdbClient.get("/discover/movie", {
-		params: { ...baseParams, page: randomPage },
-	});
-
-	const movies = randomPageRes.data.results;
-	const randomMovie = movies[Math.floor(Math.random() * movies.length)];
-
-	const imdbRating = await getFilmRatingById(await getImdbID(randomMovie.id));
-
-	return {
-		id: randomMovie.id,
-		title: randomMovie.title,
-		overview: randomMovie.overview,
-		poster_path: randomMovie.poster_path,
-		release_date: new Date(randomMovie.release_date).getFullYear(),
-		vote_count: numberFormatter.formatNumber(randomMovie.vote_count),
-		vote_average: randomMovie.vote_average,
-		imdb_rating: imdbRating.rating,
-		imdb_vote_count: imdbRating.voteCount,
-	};
-}
-
-export async function getRandomBadFilm(): Promise<Film> {
-	const baseParams = {
-		"vote_average.lte": 4.5,
-		"vote_count.gte": 500,
-		sort_by: "vote_average.desc",
-		include_adult: false,
-		include_video: false,
-		page: 1,
-	};
+	console.log(baseParams);
 
 	const firstPage = await tmdbClient.get("/discover/movie", {
 		params: baseParams,
