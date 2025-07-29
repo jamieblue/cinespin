@@ -9,4 +9,6 @@ export type Film = {
 	imdb_rating?: number;
 	imdb_id?: string;
 	imdb_vote_count?: string;
+	metacritic_rating?: number;
+	metacritic_vote_count?: string;
 };

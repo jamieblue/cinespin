@@ -1,11 +1,11 @@
 import * as dotenv from "dotenv";
-dotenv.config();
 import axios from "axios";
 import { Film } from "../../shared/models/Film";
 import { getFilmRatingById } from "./imdbService";
 import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/tmdb";
 
+dotenv.config();
 const TMDB_API = constants.TMDB_API_URL;
 const TMDB_TOKEN = process.env.TMDB_TOKEN;
 
@@ -36,8 +36,6 @@ export async function getRandomFilm(
 		page: 1,
 	};
 
-	console.log(baseParams);
-
 	const firstPage = await tmdbClient.get("/discover/movie", {
 		params: baseParams,
 	});
@@ -62,8 +60,10 @@ export async function getRandomFilm(
 		release_date: new Date(randomMovie.release_date).getFullYear(),
 		vote_count: numberFormatter.formatNumber(randomMovie.vote_count),
 		vote_average: randomMovie.vote_average,
-		imdb_rating: imdbRating.rating,
-		imdb_vote_count: imdbRating.voteCount,
+		imdb_rating: imdbRating.imdbRating,
+		imdb_vote_count: imdbRating.imdbVoteCount,
+		metacritic_rating: imdbRating.metacriticRating,
+		metacritic_vote_count: imdbRating.metacriticVoteCount,
 	};
 }
 

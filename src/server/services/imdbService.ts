@@ -13,22 +13,39 @@ const imdbClient = axios.create({
 	},
 });
 
-export async function getFilmRatingById(
-	id: string
-): Promise<{ rating: number; voteCount: string }> {
+export async function getFilmRatingById(id: string): Promise<{
+	imdbRating: number;
+	imdbVoteCount: string;
+	metacriticRating: number;
+	metacriticVoteCount: string;
+}> {
 	try {
 		const response = await imdbClient.get(`/titles/${id}`);
 		const film = response.data;
 
 		if (!film) {
-			return { rating: 0, voteCount: "0" };
+			return {
+				imdbRating: 0,
+				imdbVoteCount: "0",
+				metacriticRating: 0,
+				metacriticVoteCount: "0",
+			};
 		}
 
 		return {
-			rating: film.rating.aggregateRating,
-			voteCount: numberFormatter.formatNumber(film.rating.voteCount),
+			imdbRating: film.rating.aggregateRating,
+			imdbVoteCount: numberFormatter.formatNumber(film.rating.voteCount),
+			metacriticRating: film.metacritic?.score || 0,
+			metacriticVoteCount: numberFormatter.formatNumber(
+				film.metacritic?.reviewCount || 0
+			),
 		};
 	} catch (error) {
-		return { rating: 0, voteCount: "0" };
+		return {
+			imdbRating: 0,
+			imdbVoteCount: "0",
+			metacriticRating: 0,
+			metacriticVoteCount: "0",
+		};
 	}
 }

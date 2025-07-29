@@ -26,7 +26,7 @@ const paths = {
 	},
 };
 
-// Bundle client with esbuild
+// Native esbuild for better reload control
 const esbuildNative = require("esbuild");
 
 function bundleClient() {
@@ -40,7 +40,6 @@ function bundleClient() {
 			target: ["es2020"],
 			loader: { ".tsx": "tsx", ".ts": "ts" },
 			define: { "process.env.NODE_ENV": '"development"' },
-			// watch: false,  <-- REMOVE THIS LINE completely
 		})
 		.then(() => {
 			browserSync.reload();
@@ -56,15 +55,16 @@ function styles() {
 		.pipe(browserSync.stream());
 }
 
-// Copy static assets
 function staticAssets() {
 	return gulp
-		.src(paths.client.static)
+		.src(paths.client.static, { buffer: true, encoding: false }) // Add encoding: false here
 		.pipe(gulp.dest(paths.dest.static))
-		.pipe(browserSync.stream());
+		.on("end", () => {
+			browserSync.reload();
+		});
 }
 
-// Compile backend
+// Server compilation
 function serverScripts() {
 	return serverTSProject
 		.src()
@@ -72,7 +72,7 @@ function serverScripts() {
 		.js.pipe(gulp.dest(paths.dest.serverJS));
 }
 
-// Watch & Live reload
+// Watchers & Live Reload
 function watch() {
 	browserSync.init({
 		server: {
@@ -80,7 +80,7 @@ function watch() {
 		},
 		port: 3000,
 		ui: {
-			port: 3002, // BrowserSync UI dashboard port (pick any unused port)
+			port: 3002,
 		},
 	});
 
@@ -90,18 +90,18 @@ function watch() {
 	gulp.watch(paths.server.scripts, gulp.series(serverScripts));
 }
 
-// Build task
+// Tasks
 const build = gulp.series(
 	gulp.parallel(bundleClient, styles, staticAssets, serverScripts)
 );
 
 const dev = gulp.series(build, watch);
 
+// Export tasks
 exports.bundleClient = bundleClient;
 exports.styles = styles;
 exports.staticAssets = staticAssets;
 exports.serverScripts = serverScripts;
 exports.watch = watch;
 exports.build = build;
-exports.watch = watch;
 exports.default = dev;
