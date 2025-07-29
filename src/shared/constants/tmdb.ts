@@ -7,4 +7,3 @@ export const TMDB_IMAGE_SIZES = {
 	"200": "w200",
 	"100": "w100",
 };
-export const IMDB_URL = "https://api.imdbapi.dev";
