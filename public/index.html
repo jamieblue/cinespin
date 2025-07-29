@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/css/main.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="/js/bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <nav>
+            <a href="#"><i class="fa-solid fa-plus"></i> &nbsp Create a List</a>
+        </nav>
+        <div class="main">
+            <div id="randomSelectedFilm">
+
+            </div>
+            <div class="container" id="homeSplash">
+                <h1><i class="fa-solid fa-film"></i> CineSpin</h1>
+                <input class="search-bar" id="movieSearch" type="text" placeholder="Search for a movie" />
+            </div>
+            <div class="container" id="spinButtons">
+                <button type="button" class="spin-button" id="randomGoodFilm"><i class="fa-solid fa-thumbs-up"></i><span>Random Good Film</span></button>
+                <button type="button" class="spin-button" id="randomFilm"><i class="fa-solid fa-rotate"></i><span>Random Film</span></button>
+                <button type="button" class="spin-button" id="randomBadFilm"><i class="fa-solid fa-thumbs-down"></i><span>Random Bad Film</span></button>
+            </div>
+            <div class="container" id="films">
+
+            </div>
+        </div>
+    </body>
+</html>

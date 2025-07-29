@@ -1,0 +1,22 @@
+nav {
+    height: 50px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+
+    a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 25px;
+        background: #3e3e42;
+        margin-right: 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.25s ease-in-out;
+
+        &:hover {
+            background: #2f2f33;
+            transition: 0.25s ease-in-out;
+        }
+    }
+}

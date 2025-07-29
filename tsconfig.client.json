@@ -1,0 +1,16 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "dist/public/js",
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+		"baseUrl": "src"
+	},
+	"include": [
+		"src/client",
+		"src/shared/models",
+		"src/shared/util",
+		"src/shared/constants"
+	]
+}

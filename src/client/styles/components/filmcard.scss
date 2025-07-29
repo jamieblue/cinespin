@@ -1,0 +1,27 @@
+.film-card {
+    display: flex;
+    flex: 0 0 20%;
+    background: #3e3e42;
+    padding: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    img {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        width: 120px;
+    }
+
+    .details {
+        margin-left: 10px;
+    }
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    &:hover {
+        background: #2f2f33;
+    }
+}

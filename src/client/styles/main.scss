@@ -1,0 +1,116 @@
+@use "components/searchbar";
+@use "components/filmcard";
+@use "components/nav";
+@use "components/fullscreenfilm";
+
+body {
+	background: #1e1e1e;
+	color: white;
+	font-family: "Hanken Grotesk", sans-serif;
+	overflow-x: hidden;
+}
+
+.fa-thumbs-up {
+	color: #79d279;
+}
+
+.fa-thumbs-down {
+	color: #ff4d4d;
+}
+
+.main {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	padding-top: 100px;
+}
+
+.container {
+	display: flex;
+}
+
+#homeSplash {
+	display: flex;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin-bottom: 30px;
+
+	h1 {
+		font-size: 60px;
+	}
+}
+
+#films {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 50px;
+	align-items: center;
+	justify-content: center;
+}
+
+#spinButtons {
+	margin-bottom: 60px;
+	gap: 35px;
+	flex-direction: row;
+
+	button {
+		display: flex;
+		flex-direction: column;
+		background: #3e3e42;
+		border-radius: 8px;
+		padding: 25px;
+		border: none;
+		font-size: 35px;
+		color: white;
+		width: 130px;
+		height: 130px;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		font-weight: bold;
+		box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+		transition: 0.25s ease-in-out;
+
+		&:hover {
+			background: #2f2f33;
+			transition: 0.25s ease-in-out;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+		}
+
+		span {
+			margin-top: 10px;
+			font-size: 14px;
+		}
+	}
+}
+
+@media only screen and (max-width: 600px) {
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.slide-in {
+	animation: slideIn 0.25s ease-out forwards;
+}
+
+@keyframes slideOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+.slide-out {
+	animation: slideOut 0.25s ease-out forwards;
+}
