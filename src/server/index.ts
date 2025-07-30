@@ -17,6 +17,7 @@ app.use(express.static('dist/public'));
 // API routes
 app.use('/api/tmdb', tmdbRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, () =>
+{
+    console.log(`Server running on http://localhost:${ PORT }`);
 });
