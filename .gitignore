@@ -5,6 +5,7 @@ dist/
 
 # Prisma
 prisma/migrations/
+generated/
 *.db
 *.sqlite
 

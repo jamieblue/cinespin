@@ -12,7 +12,7 @@
 	.close-button {
 		position: absolute;
 		top: 20px;
-		right: 20px;
+		right: 25px;
 		font-size: 30px;
 		color: white;
 		cursor: pointer;
@@ -55,6 +55,29 @@
 			line-height: 25px;
 			max-width: 75%;
 		}
+
+        .genres {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            gap: 10px;
+            font-size: 14px;
+
+            .genre {
+                background: #3e3e42;
+                padding: 6px 8px;
+                border-radius: 8px;
+                color: white;
+                cursor: default;
+                transition: background 0.25s ease-in-out;
+
+                &:hover {
+                    background: #2f2f33;
+                    transition: background 0.25s ease-in-out;
+                }
+            }
+        }
 
 		#ratings {
 			display: flex;
@@ -120,12 +143,11 @@
 				cursor: pointer;
 				font-weight: bold;
 				box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-				transition: 0.25s ease-in-out;
+				transition: background 0.25s ease-in-out;
 
 				&:hover {
 					background: #2f2f33;
-					transition: 0.25s ease-in-out;
-					box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+					transition: background 0.25s ease-in-out;
 				}
 			}
 		}
