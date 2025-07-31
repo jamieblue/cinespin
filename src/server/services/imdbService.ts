@@ -5,7 +5,7 @@ import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/imdb";
 import { Film } from "../../shared/models/Film";
 
-const IMDB_API = constants.IMDB_URL;
+const IMDB_API = constants.IMDB_API_BASE_URL;
 
 type ImdbFilm =
     {
@@ -18,6 +18,7 @@ type ImdbFilm =
         metacritic: {
             score: number;
             reviewCount: number;
+            url: string;
         };
 
     }
@@ -37,6 +38,7 @@ const imdbClient = axios.create({
 export async function getFilmRatingById(id: string): Promise<{
     imdbRating: number;
     imdbVoteCount: string;
+    metacritic_url?: string;
     metacriticRating: number;
     metacriticVoteCount: string;
 }>
@@ -59,6 +61,7 @@ export async function getFilmRatingById(id: string): Promise<{
         return {
             imdbRating: film.rating.aggregateRating,
             imdbVoteCount: numberFormatter.formatNumber(film.rating.voteCount),
+            metacritic_url: film.metacritic?.url,
             metacriticRating: film.metacritic?.score || 0,
             metacriticVoteCount: numberFormatter.formatNumber(
                 film.metacritic?.reviewCount || 0
@@ -87,7 +90,6 @@ export async function getFilmRatingsByIds(request: ImdbBatchFilmRequest[]): Prom
         });
 
         const films: ImdbFilm[] = response.data?.titles;
-
         if (!films || !Array.isArray(films)) return [];
 
         return films.map((film): Partial<Film> => ({
@@ -98,6 +100,7 @@ export async function getFilmRatingsByIds(request: ImdbBatchFilmRequest[]): Prom
             imdb_vote_count: film.rating?.voteCount != null
                 ? numberFormatter.formatNumber(film.rating.voteCount)
                 : "0",
+            metacritic_url: film.metacritic?.url,
             metacritic_rating: film.metacritic?.score ?? 0,
             metacritic_vote_count: film.metacritic?.reviewCount != null
                 ? numberFormatter.formatNumber(film.metacritic.reviewCount)

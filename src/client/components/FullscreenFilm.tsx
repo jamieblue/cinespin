@@ -4,12 +4,15 @@ import { useState, useEffect } from "preact/hooks";
 import { Film } from "../../shared/models/Film";
 import { RandomFilmType } from "../../shared/models/RandomFilmType";
 import axios from "axios";
-import * as constants from "../../shared/constants/tmdb";
+import * as TMDBconstants from "../../shared/constants/tmdb";
+import * as IMDBconstants from "../../shared/constants/imdb";
 import { scrollLock } from "../../shared/util/scrollLock";
 import { getRatingColor } from "../../shared/util/metacriticHelper";
 
-const TMDB_IMAGE_BASE_URL = constants.TMDB_IMAGE_BASE_URL;
-const TMDB_IMAGE_SIZES = constants.TMDB_IMAGE_SIZES;
+const TMDB_IMAGE_BASE_URL = TMDBconstants.TMDB_IMAGE_BASE_URL;
+const TMDB_IMAGE_SIZES = TMDBconstants.TMDB_IMAGE_SIZES;
+const TMDB_FILM_BASE_URL = TMDBconstants.TMDB_FILM_BASE_URL;
+const IMDB_FILM_BASE_URL = IMDBconstants.IMDB_FILM_BASE_URL;
 
 type Props = {
     film: Film;
@@ -139,59 +142,65 @@ export function FullscreenFilm({ film, onClose }: Props)
                 <div id="ratings">
                     {(currentFilm.imdb_rating !== 0 &&
                         currentFilm.imdb_vote_count !== "0") && (
-                            <div id="imdb-rating">
-                                <div class="rating-row">
-                                    <img
-                                        src="/content/images/svg/imdb_logo.svg"
-                                        alt="IMDb:"
-                                    />
-                                    {currentFilm.imdb_rating !== 0
-                                        ? currentFilm.imdb_rating?.toFixed(1)
-                                        : "N/A"}
+                            <a href={`${ IMDB_FILM_BASE_URL }/${ currentFilm.imdb_id }`} target="_blank" rel="noopener noreferrer">
+                                <div id="imdb-rating">
+                                    <div class="rating-row">
+                                        <img
+                                            src="/content/images/svg/imdb_logo.svg"
+                                            alt="IMDb:"
+                                        />
+                                        {currentFilm.imdb_rating !== 0
+                                            ? currentFilm.imdb_rating?.toFixed(1)
+                                            : "N/A"}
+                                    </div>
+                                    <div class="vote-count">
+                                        {currentFilm.imdb_rating !== 0
+                                            ? `${ currentFilm.imdb_vote_count } votes`
+                                            : ""}
+                                    </div>
                                 </div>
-                                <div class="vote-count">
-                                    {currentFilm.imdb_rating !== 0
-                                        ? `${ currentFilm.imdb_vote_count } votes`
-                                        : ""}
-                                </div>
-                            </div>
+                            </a>
                         )}
 
                     {(currentFilm.metacritic_rating !== 0 &&
                         currentFilm.metacritic_vote_count !== "0") && (
-                            <div id="metacritic-rating">
-                                <div class="rating-row">
-                                    <img
-                                        src="/content/images/png/metacritic.png"
-                                        alt="Metacritic:"
-                                    />
-                                    <div
-                                        id="metacritic-rating-value"
-                                        className={`metacritic-rating-${ getRatingColor(currentFilm.metacritic_rating || 0) }`}
-                                    >
-                                        {currentFilm.metacritic_rating}
+                            <a href={currentFilm.metacritic_url} target="_blank" rel="noopener noreferrer">
+                                <div id="metacritic-rating">
+                                    <div class="rating-row">
+                                        <img
+                                            src="/content/images/png/metacritic.png"
+                                            alt="Metacritic:"
+                                        />
+                                        <div
+                                            id="metacritic-rating-value"
+                                            className={`metacritic-rating-${ getRatingColor(currentFilm.metacritic_rating || 0) }`}
+                                        >
+                                            {currentFilm.metacritic_rating}
+                                        </div>
+                                    </div>
+                                    <div class="vote-count">
+                                        {currentFilm.metacritic_vote_count} critics
                                     </div>
                                 </div>
-                                <div class="vote-count">
-                                    {currentFilm.metacritic_vote_count} critics
-                                </div>
-                            </div>
+                            </a>
                         )}
 
                     {(currentFilm.vote_average !== 0 &&
                         currentFilm.vote_count !== "0") && (
-                            <div id="tmdb-rating">
-                                <div class="rating-row">
-                                    <img
-                                        src="/content/images/svg/tmdb_logo.svg"
-                                        alt="TMDB:"
-                                    />
-                                    {currentFilm.vote_average.toFixed(1)}
+                            <a href={`${ TMDB_FILM_BASE_URL }/${ currentFilm.id }`} target="_blank" rel="noopener noreferrer">
+                                <div id="tmdb-rating">
+                                    <div class="rating-row">
+                                        <img
+                                            src="/content/images/svg/tmdb_logo.svg"
+                                            alt="TMDB:"
+                                        />
+                                        {currentFilm.vote_average.toFixed(1)}
+                                    </div>
+                                    <div class="vote-count">
+                                        {currentFilm.vote_count} votes
+                                    </div>
                                 </div>
-                                <div class="vote-count">
-                                    {currentFilm.vote_count} votes
-                                </div>
-                            </div>
+                            </a>
                         )}
                 </div>
 
