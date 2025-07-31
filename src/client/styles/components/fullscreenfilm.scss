@@ -1,62 +1,74 @@
-.fullscreen-film {
-	position: fixed;
-	display: flex;
-	flex-direction: row;
-	width: 100vw;
-	height: 100vh;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
+@use "../_variables" as *;
 
-	.close-button {
-		position: absolute;
-		top: 20px;
-		right: 25px;
-		font-size: 30px;
-		color: white;
-		cursor: pointer;
-		z-index: 10;
-		transition: color 0.25s ease-in-out;
+.fullscreen-film
+{
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
 
-		&:hover {
-			color: rgba(white, 0.3);
-			transition: color 0.25s ease-in-out;
-		}
-	}
+    .close-button
+    {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        font-size: 30px;
+        color: white;
+        cursor: pointer;
+        z-index: 10;
+        transition: color 0.25s ease-in-out;
 
-	img {
-		display: flex;
-		height: 100vh;
-		width: auto;
-	}
+        &:hover
+        {
+            color: rgba(white, 0.3);
+            transition: color 0.25s ease-in-out;
+        }
+    }
 
-	.details {
-		display: flex;
-		flex-direction: column;
-		padding: 30px;
+    img
+    {
+        display: flex;
+        height: 100vh;
+        width: auto;
+    }
 
-		.title {
-			font-size: 65px;
-			font-weight: bold;
-			max-width: 75%;
-			margin-bottom: 5px;
-			line-height: 65px;
-		}
+    .details
+    {
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
 
-		.release-year {
-			font-size: 35px;
-		}
+        .title
+        {
+            font-size: 65px;
+            font-weight: bold;
+            max-width: 75%;
+            margin-bottom: 5px;
+            line-height: 65px;
+        }
 
-		.overview {
-			font-size: 18px;
-			letter-spacing: 1px;
-			margin-top: 20px;
-			line-height: 25px;
-			max-width: 75%;
-		}
+        .release-year
+        {
+            font-size: 35px;
+        }
 
-        .genres {
+        .overview
+        {
+            font-size: 18px;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            line-height: 25px;
+            max-width: 75%;
+        }
+
+        .genres
+        {
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
@@ -64,106 +76,120 @@
             gap: 10px;
             font-size: 14px;
 
-            .genre {
+            .genre
+            {
                 background: #3e3e42;
                 padding: 6px 8px;
-                border-radius: 8px;
+                border-radius: 5px;
                 color: white;
                 cursor: default;
                 transition: background 0.25s ease-in-out;
 
-                &:hover {
+                &:hover
+                {
                     background: #2f2f33;
                     transition: background 0.25s ease-in-out;
                 }
             }
         }
 
-		#ratings {
-			display: flex;
-			flex-direction: row;
-			margin-top: 20px;
-			gap: 40px;
+        #ratings
+        {
+            display: flex;
+            flex-direction: row;
+            margin-top: 20px;
+            gap: 40px;
 
-			#imdb-rating,
-			#tmdb-rating,
-			#metacritic-rating {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				font-size: 20px;
-				margin-top: 20px;
-				font-weight: bold;
+            #imdb-rating,
+            #tmdb-rating,
+            #metacritic-rating
+            {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 20px;
+                margin-top: 20px;
+                font-weight: bold;
 
-				.rating-row {
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-					gap: 8px;
+                .rating-row
+                {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 8px;
 
-					img {
-						width: 30px;
-						height: auto;
-					}
-				}
+                    img
+                    {
+                        width: 30px;
+                        height: auto;
+                    }
+                }
 
-				.vote-count {
-					margin-top: 5px;
-					font-size: 14px;
-					font-weight: normal;
-					opacity: 0.8;
-				}
-			}
+                .vote-count
+                {
+                    margin-top: 5px;
+                    font-size: 14px;
+                    font-weight: normal;
+                    opacity: 0.8;
+                }
+            }
 
-			#tmdb-rating {
-				.rating-row {
-					img {
-						width: 41px;
-						height: auto;
-					}
-				}
-			}
-		}
+            #tmdb-rating
+            {
+                .rating-row
+                {
+                    img
+                    {
+                        width: 41px;
+                        height: auto;
+                    }
+                }
+            }
+        }
 
-		.buttons {
-			display: flex;
-			flex-direction: row;
-			gap: 15px;
-			margin-top: auto;
+        .buttons
+        {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            margin-top: auto;
 
-			button {
-				justify-self: end;
-				background: #3e3e42;
-				border-radius: 8px;
-				padding: 12px 16px;
-				border: none;
-				color: white;
-				width: auto;
-				font-size: 16px;
-				cursor: pointer;
-				font-weight: bold;
-				box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-				transition: background 0.25s ease-in-out;
+            button
+            {
+                justify-self: end;
+                background: $primary;
+                border-radius: 8px;
+                padding: 12px 16px;
+                border: none;
+                color: white;
+                width: auto;
+                font-size: 16px;
+                cursor: pointer;
+                font-weight: bold;
+                box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+                transition: background 0.25s ease-in-out;
 
-				&:hover {
-					background: #2f2f33;
-					transition: background 0.25s ease-in-out;
-				}
-			}
-		}
-	}
+                &:hover
+                {
+                    background: #2f2f33;
+                    transition: background 0.25s ease-in-out;
+                }
+            }
+        }
+    }
 }
 
-.fullscreen-film::after {
-	content: "";
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	width: 100vw;
-	height: 100vh;
-	background: black;
-	opacity: 0.85;
-	z-index: -1;
+.fullscreen-film::after
+{
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    opacity: 0.85;
+    z-index: -1;
 }

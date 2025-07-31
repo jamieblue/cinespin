@@ -4,6 +4,7 @@ import { render } from "preact";
 import { FullscreenFilm } from "./components/FullscreenFilm";
 import axios from "axios";
 import { Film } from "../shared/models/Film";
+import { FilmList } from "./components/FilmList";
 
 async function getRandomFilm(): Promise<Film>
 {
@@ -27,6 +28,14 @@ async function getRandomBadFilm(): Promise<Film>
         "http://localhost:3001/api/tmdb/random-bad-film"
     );
     return (await response.data) as Film;
+}
+
+async function getPopularFilms(): Promise<Film[]>
+{
+    const response = await axios.get(
+        "http://localhost:3001/api/tmdb/popular"
+    );
+    return (await response.data) as Film[];
 }
 
 async function setupButtons()
@@ -89,7 +98,24 @@ async function setupButtons()
     }
 }
 
+function populateHomepage()
+{
+
+}
+
 document.addEventListener("DOMContentLoaded", () =>
 {
     setupButtons();
+
+    const target = document.getElementById("films");
+    if (target)
+    {
+        render(
+            <>
+                <FilmList title="Popular Films" url="http://localhost:3001/api/tmdb/popular" fontawesome="fa-solid fa-fire" />
+                <FilmList title="Upcoming Releases" url="http://localhost:3001/api/tmdb/upcoming" fontawesome="fa-solid fa-calendar-days" />
+            </>,
+            target
+        )
+    }
 });

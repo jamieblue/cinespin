@@ -34,7 +34,8 @@ function bundleClient()
         .build({
             entryPoints: [paths.client.entry],
             bundle: true,
-            sourcemap: true,
+            outfile: `${paths.dest.clientJS}/bundle.js`,
+            sourcemap: 'external',
             minify: false,
             target: ["es2020"],
             loader: { ".tsx": "tsx", ".ts": "ts" },

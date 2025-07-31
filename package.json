@@ -16,6 +16,7 @@
     "axios": "^1.11.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "lodash": "^4.17.21",
     "pg": "^8.16.3",
     "preact": "^10.26.9"
   },
@@ -23,6 +24,7 @@
     "@types/axios": "^0.14.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^24.1.0",
     "browser-sync": "^3.0.4",
     "esbuild": "^0.25.8",
