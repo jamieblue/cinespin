@@ -1,10 +1,12 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { Film } from "../../shared/models/Film";
 import { RandomFilmType } from "../../shared/models/RandomFilmType";
 import axios from "axios";
 import * as constants from "../../shared/constants/tmdb";
+import { scrollLock } from "../../shared/util/scrollLock";
+import { getRatingColor } from "../../shared/util/metacriticHelper";
 
 const TMDB_IMAGE_BASE_URL = constants.TMDB_IMAGE_BASE_URL;
 const TMDB_IMAGE_SIZES = constants.TMDB_IMAGE_SIZES;
@@ -38,18 +40,17 @@ async function getRandomBadFilm(): Promise<Film>
     return response.data as Film;
 }
 
-function getRatingColor(rating: number): string
-{
-    if (rating >= 61) return "#00ce7a";
-    if (rating >= 40) return "#ffbd3f";
-    return "#ff6874";
-}
-
 export function FullscreenFilm({ film, onClose }: Props)
 {
     const [isClosing, setIsClosing] = useState(false);
     const [currentFilm, setCurrentFilm] = useState(film);
     const [queuedFilm, setQueuedFilm] = useState<Film | null>(null);
+
+    useEffect(() =>
+    {
+        scrollLock.enable();
+        return () => scrollLock.disable();
+    }, []);
 
     // Preload the image to avoid flickering
     const preloadImage = (src: string): Promise<void> =>
@@ -136,37 +137,27 @@ export function FullscreenFilm({ film, onClose }: Props)
                 )}
 
                 <div id="ratings">
-                    <div id="imdb-rating">
-                        <div class="rating-row">
-                            <img
-                                src="/content/images/svg/imdb_logo.svg"
-                                alt="IMDb:"
-                            />
-                            {currentFilm.imdb_rating !== 0
-                                ? currentFilm.imdb_rating
-                                : "N/A"}
-                        </div>
-                        <div class="vote-count">
-                            {currentFilm.imdb_rating !== 0
-                                ? `${ currentFilm.imdb_vote_count } votes`
-                                : ""}
-                        </div>
-                    </div>
+                    {(currentFilm.imdb_rating !== 0 &&
+                        currentFilm.imdb_vote_count !== "0") && (
+                            <div id="imdb-rating">
+                                <div class="rating-row">
+                                    <img
+                                        src="/content/images/svg/imdb_logo.svg"
+                                        alt="IMDb:"
+                                    />
+                                    {currentFilm.imdb_rating !== 0
+                                        ? currentFilm.imdb_rating?.toFixed(1)
+                                        : "N/A"}
+                                </div>
+                                <div class="vote-count">
+                                    {currentFilm.imdb_rating !== 0
+                                        ? `${ currentFilm.imdb_vote_count } votes`
+                                        : ""}
+                                </div>
+                            </div>
+                        )}
 
-                    <div id="tmdb-rating">
-                        <div class="rating-row">
-                            <img
-                                src="/content/images/svg/tmdb_logo.svg"
-                                alt="TMDB:"
-                            />
-                            {currentFilm.vote_average.toFixed(1)}
-                        </div>
-                        <div class="vote-count">
-                            {currentFilm.vote_count} votes
-                        </div>
-                    </div>
-
-                    {(currentFilm.metacritic_rating !== 0 ||
+                    {(currentFilm.metacritic_rating !== 0 &&
                         currentFilm.metacritic_vote_count !== "0") && (
                             <div id="metacritic-rating">
                                 <div class="rating-row">
@@ -176,17 +167,29 @@ export function FullscreenFilm({ film, onClose }: Props)
                                     />
                                     <div
                                         id="metacritic-rating-value"
-                                        style={{
-                                            color: getRatingColor(
-                                                currentFilm.metacritic_rating || 0
-                                            ),
-                                        }}
+                                        className={`metacritic-rating-${ getRatingColor(currentFilm.metacritic_rating || 0) }`}
                                     >
                                         {currentFilm.metacritic_rating}
                                     </div>
                                 </div>
                                 <div class="vote-count">
                                     {currentFilm.metacritic_vote_count} critics
+                                </div>
+                            </div>
+                        )}
+
+                    {(currentFilm.vote_average !== 0 &&
+                        currentFilm.vote_count !== "0") && (
+                            <div id="tmdb-rating">
+                                <div class="rating-row">
+                                    <img
+                                        src="/content/images/svg/tmdb_logo.svg"
+                                        alt="TMDB:"
+                                    />
+                                    {currentFilm.vote_average.toFixed(1)}
+                                </div>
+                                <div class="vote-count">
+                                    {currentFilm.vote_count} votes
                                 </div>
                             </div>
                         )}
@@ -216,3 +219,4 @@ export function FullscreenFilm({ film, onClose }: Props)
         </div>
     );
 }
+

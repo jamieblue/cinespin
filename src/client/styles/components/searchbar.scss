@@ -1,7 +1,9 @@
+@use "../_variables" as *;
+
 .search-bar {
     color: white;
-    border: 1px solid #3e3e42;
-    background: #3e3e42;
+    border: 1px solid $primary;
+    background: $primary;
     border-radius: 12px;
     font-size: 16px;
     padding: 16px 18px;

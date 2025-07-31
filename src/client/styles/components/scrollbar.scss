@@ -1,0 +1,8 @@
+@use "../_variables" as *;
+
+body,
+html
+{
+    scrollbar-color: $primary $secondary;
+    scrollbar-width: thin;
+}
