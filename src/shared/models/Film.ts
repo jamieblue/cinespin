@@ -11,6 +11,7 @@ export type Film = {
     imdb_rating?: number;
     imdb_id?: string;
     imdb_vote_count?: string;
+    metacritic_url?: string;
     metacritic_rating?: number;
     metacritic_vote_count?: string;
     genres: Genre[];

@@ -8,7 +8,7 @@ import { GetGenresByIDsQueryHandler } from "../cqrs/genres/queries/getGenresByID
 import { take, orderBy, chunk } from "lodash";
 
 dotenv.config();
-const TMDB_API = constants.TMDB_API_URL;
+const TMDB_API = constants.TMDB_API_BASE_URL;
 const TMDB_TOKEN = process.env.TMDB_TOKEN;
 
 type TmdbFilm =
@@ -67,7 +67,8 @@ export async function getRandomFilm(
     const movies: TmdbFilm[] = randomPageRes.data.results;
     const randomMovie: TmdbFilm = movies[Math.floor(Math.random() * movies.length)];
 
-    const imdbRating = await imdbService.getFilmRatingById(await getImdbID(randomMovie.id));
+    const imdbID = await getImdbID(randomMovie.id)
+    const imdbInfo = await imdbService.getFilmRatingById(imdbID);
 
     const getGenresResult = await new GetGenresByIDsQueryHandler().handle({
         genreIds: randomMovie.genre_ids,
@@ -81,10 +82,12 @@ export async function getRandomFilm(
         release_date: new Date(randomMovie.release_date).getFullYear(),
         vote_count: numberFormatter.formatNumber(randomMovie.vote_count),
         vote_average: randomMovie.vote_average,
-        imdb_rating: imdbRating.imdbRating,
-        imdb_vote_count: imdbRating.imdbVoteCount,
-        metacritic_rating: imdbRating.metacriticRating,
-        metacritic_vote_count: imdbRating.metacriticVoteCount,
+        imdb_id: imdbID,
+        imdb_rating: imdbInfo.imdbRating,
+        imdb_vote_count: imdbInfo.imdbVoteCount,
+        metacritic_url: imdbInfo.metacritic_url,
+        metacritic_rating: imdbInfo.metacriticRating,
+        metacritic_vote_count: imdbInfo.metacriticVoteCount,
         genres: getGenresResult.success ? getGenresResult.data.genres : [],
     };
 }
@@ -142,8 +145,10 @@ export async function getPopularFilms(): Promise<Film[]>
                 release_date: new Date(film.release_date).getFullYear(),
                 vote_count: numberFormatter.formatNumber(film.vote_count),
                 vote_average: film.vote_average,
+                imdb_id: imdbInfo?.imdb_id,
                 imdb_rating: imdbInfo?.imdb_rating ?? 0,
                 imdb_vote_count: imdbInfo?.imdb_vote_count ?? "0",
+                metacritic_url: imdbInfo?.metacritic_url,
                 metacritic_rating: imdbInfo?.metacritic_rating ?? 0,
                 metacritic_vote_count: imdbInfo?.metacritic_vote_count ?? "0",
                 genres: genreResult.success ? genreResult.data.genres : [],
