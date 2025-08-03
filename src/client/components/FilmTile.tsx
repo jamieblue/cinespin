@@ -62,11 +62,11 @@ export function FilmTile({ film, onClick }: Props)
                     </div>
                 )}
             </div>
-            {film.vote_average !== 0 || film.imdb_rating !== 0 ? (
+            {film.vote_average !== 0 || film.imdb_rating !== 0 || film.metacritic_rating !== 0 ? (
                 <div className="film-tile-ratings">
-                    <div className="film-tile-rating">
-                        {film.imdb_rating != 0 ? (
-                            <>
+                    {film.imdb_rating != 0 ? (
+                        <>
+                            <div className="film-tile-rating">
                                 <img
                                     src="/content/images/svg/imdb_logo.svg"
                                     alt="IMDb:"
@@ -74,13 +74,13 @@ export function FilmTile({ film, onClick }: Props)
                                 <div className="film-tile-rating-value">
                                     {film.imdb_rating?.toFixed(1)}
                                 </div>
-                            </>
-                        ) : (
-                            <>
+                            </div>
+                        </>
+                    ) : (
+                        <>
 
-                            </>
-                        )}
-                    </div>
+                        </>
+                    )}
 
                     {film.metacritic_rating != 0 ? (
                         <div className="film-tile-rating">
@@ -92,27 +92,20 @@ export function FilmTile({ film, onClick }: Props)
                                 {film.metacritic_rating}
                             </div>
                         </div>
-                    ) : (
+                    ) : film.vote_average != 0 ? (
                         <div className="film-tile-rating">
-                            {film.vote_average != 0 ? (
-                                <>
-                                    <img
-                                        src="/content/images/svg/tmdb_logo.svg"
-                                        alt="TMDB:"
-                                    />
-                                    <div className="film-tile-rating-value">
-                                        {film.vote_average?.toFixed(1)}
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-
-                                </>
-                            )}
+                            <img
+                                src="/content/images/svg/tmdb_logo.svg"
+                                alt="TMDB:"
+                            />
+                            <div className="film-tile-rating-value">
+                                {film.vote_average?.toFixed(1)}
+                            </div>
                         </div>
-                    )}
+                    ) : null}
                 </div>
-            ) : <></>}
-        </div>
+            ) : <></>
+            }
+        </div >
     );
 }

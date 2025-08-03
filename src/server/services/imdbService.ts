@@ -4,6 +4,8 @@ import axios from "axios";
 import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/imdb";
 import { Film } from "../../shared/models/Film";
+import { Genre } from "../../shared/models/Genre";
+import Bottleneck from "bottleneck";
 
 const IMDB_API = constants.IMDB_API_BASE_URL;
 
@@ -11,6 +13,12 @@ type ImdbFilm =
     {
         id: string;
         primaryTitle: string;
+        primaryImage: {
+            url: string;
+        };
+        startYear: number;
+        plot: string;
+        genres: string[]
         rating: {
             aggregateRating: number;
             voteCount: number;
@@ -35,6 +43,43 @@ const imdbClient = axios.create({
     },
 });
 
+const imdbLimiter = new Bottleneck({
+    minTime: 200, // 1 request every 200ms (~5/sec)
+});
+
+const limitedImdbGet = imdbLimiter.wrap(
+    imdbClient.get.bind(imdbClient)
+) as typeof imdbClient.get;
+
+export async function search(query: string): Promise<Film[]>
+{
+    const response = await limitedImdbGet("/search/titles", {
+        params: {
+            query,
+            limit: 14,
+            types: "movie",
+        },
+    });
+
+    console.log("IMDB Search Response:", response.data.titles);
+
+    return response.data.titles.map((film: ImdbFilm): Film => ({
+        imdb_id: film.id,
+        title: film.primaryTitle,
+        overview: film.plot,
+        poster_path: film.primaryImage.url || "",
+        release_date: film.startYear,
+        vote_count: numberFormatter.formatNumber(film.rating.voteCount),
+        vote_average: film.rating.aggregateRating,
+        imdb_rating: film.rating.aggregateRating,
+        imdb_vote_count: numberFormatter.formatNumber(film.rating.voteCount),
+        metacritic_url: film.metacritic?.url,
+        metacritic_rating: film.metacritic?.score || 0,
+        metacritic_vote_count: numberFormatter.formatNumber(film.metacritic?.reviewCount || 0),
+        genres: film.genres.map((genre) => ({ name: genre } as Genre)),
+    }));
+}
+
 export async function getFilmRatingById(id: string): Promise<{
     imdbRating: number;
     imdbVoteCount: string;
@@ -45,7 +90,7 @@ export async function getFilmRatingById(id: string): Promise<{
 {
     try
     {
-        const response = await imdbClient.get(`/titles/${ id }`);
+        const response = await limitedImdbGet(`/titles/${ id }`);
         const film: ImdbFilm = response.data;
 
         if (!film)
@@ -82,7 +127,7 @@ export async function getFilmRatingsByIds(request: ImdbBatchFilmRequest[]): Prom
 {
     try
     {
-        const response = await imdbClient.get("/titles:batchGet", {
+        const response = await limitedImdbGet("/titles:batchGet", {
             params: {
                 titleIds: request.map((film): string => film.imdbID),
             },
@@ -93,7 +138,7 @@ export async function getFilmRatingsByIds(request: ImdbBatchFilmRequest[]): Prom
         if (!films || !Array.isArray(films)) return [];
 
         return films.map((film): Partial<Film> => ({
-            id: request.find((r) => r.imdbID === film.id)?.tmdbID || 0,
+            tmdb_id: request.find((r) => r.imdbID === film.id)?.tmdbID || 0,
             imdb_id: film.id,
             title: film.primaryTitle,
             imdb_rating: film.rating?.aggregateRating ?? 0,

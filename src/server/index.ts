@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import tmdbRoutes from './routes/tmdb';
+import imdbRoutes from './routes/imdb';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.static('dist/public'));
 
 // API routes
 app.use('/api/tmdb', tmdbRoutes);
+app.use('/api/imdb', imdbRoutes);
 
 app.listen(PORT, () =>
 {
