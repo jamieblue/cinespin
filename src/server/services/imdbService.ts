@@ -51,35 +51,6 @@ const limitedImdbGet = imdbLimiter.wrap(
     imdbClient.get.bind(imdbClient)
 ) as typeof imdbClient.get;
 
-export async function search(query: string): Promise<Film[]>
-{
-    const response = await limitedImdbGet("/search/titles", {
-        params: {
-            query,
-            limit: 14,
-            types: "movie",
-        },
-    });
-
-    console.log("IMDB Search Response:", response.data.titles);
-
-    return response.data.titles.map((film: ImdbFilm): Film => ({
-        imdb_id: film.id,
-        title: film.primaryTitle,
-        overview: film.plot,
-        poster_path: film.primaryImage.url || "",
-        release_date: film.startYear,
-        vote_count: numberFormatter.formatNumber(film.rating.voteCount),
-        vote_average: film.rating.aggregateRating,
-        imdb_rating: film.rating.aggregateRating,
-        imdb_vote_count: numberFormatter.formatNumber(film.rating.voteCount),
-        metacritic_url: film.metacritic?.url,
-        metacritic_rating: film.metacritic?.score || 0,
-        metacritic_vote_count: numberFormatter.formatNumber(film.metacritic?.reviewCount || 0),
-        genres: film.genres.map((genre) => ({ name: genre } as Genre)),
-    }));
-}
-
 export async function getFilmRatingById(id: string): Promise<{
     imdbRating: number;
     imdbVoteCount: string;
