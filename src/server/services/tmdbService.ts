@@ -6,6 +6,7 @@ import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/tmdb";
 import { GetGenresByIDsQueryHandler } from "../cqrs/genres/queries/getGenresByIDsQuery";
 import { take, orderBy, chunk } from "lodash";
+import Bottleneck from "bottleneck";
 
 dotenv.config();
 const TMDB_API = constants.TMDB_API_BASE_URL;
@@ -32,6 +33,14 @@ const tmdbClient = axios.create({
     },
 });
 
+const tmdbLimiter = new Bottleneck({
+    minTime: 20, // 1 request every 20ms (~50/sec)
+});
+
+const get = tmdbLimiter.wrap(
+    tmdbClient.get.bind(tmdbClient)
+) as typeof tmdbClient.get;
+
 export async function getRandomFilm(
     rating: number | null,
     voteCount: number | null,
@@ -53,14 +62,12 @@ export async function getRandomFilm(
         page: 1,
     };
 
-    const firstPage = await tmdbClient.get("/discover/movie", {
-        params: baseParams,
-    });
+    const firstPage = await get("/discover/movie", { params: baseParams });
 
     const totalPages = Math.min(firstPage.data.total_pages, 500); // API caps at 500
     const randomPage = Math.floor(Math.random() * totalPages) + 1;
 
-    const randomPageRes = await tmdbClient.get("/discover/movie", {
+    const randomPageRes = await get("/discover/movie", {
         params: { ...baseParams, page: randomPage },
     });
 
@@ -75,7 +82,7 @@ export async function getRandomFilm(
     });
 
     return {
-        id: randomMovie.id,
+        tmdb_id: randomMovie.id,
         title: randomMovie.title,
         overview: randomMovie.overview,
         poster_path: randomMovie.poster_path,
@@ -102,7 +109,7 @@ export async function getPopularFilms(): Promise<Film[]>
         page: 1,
     };
 
-    const firstPage = await tmdbClient.get("/movie/popular", {
+    const firstPage = await get("/movie/popular", {
         params: baseParams,
     });
 
@@ -135,10 +142,10 @@ export async function getPopularFilms(): Promise<Film[]>
                 genreIds: film.genre_ids,
             });
 
-            const imdbInfo = allImdbRatings.find((r) => r.id === film.id);
+            const imdbInfo = allImdbRatings.find((r) => r.tmdb_id === film.id);
 
             return {
-                id: film.id,
+                tmdb_id: film.id,
                 title: film.title,
                 overview: film.overview,
                 poster_path: film.poster_path,
@@ -169,7 +176,7 @@ export async function getUpcomingFilms(): Promise<Film[]>
         page: 1,
     };
 
-    const firstPage = await tmdbClient.get("/discover/movie", {
+    const firstPage = await get("/discover/movie", {
         params: baseParams,
     });
 
@@ -184,7 +191,7 @@ export async function getUpcomingFilms(): Promise<Film[]>
             });
 
             return {
-                id: film.id,
+                tmdb_id: film.id,
                 title: film.title,
                 overview: film.overview,
                 poster_path: film.poster_path,
@@ -201,9 +208,77 @@ export async function getUpcomingFilms(): Promise<Film[]>
     );
 }
 
+export async function search(searchTerm: string): Promise<Film[]>
+{
+    const baseParams = {
+        include_adult: false,
+        page: 1,
+        query: searchTerm,
+    };
+
+    const firstPage = await get("/search/movie", {
+        params: baseParams,
+    });
+
+    const allFilms = take(firstPage.data.results, 14) as TmdbFilm[];
+
+    const imdbRequests: imdbService.ImdbBatchFilmRequest[] = await Promise.all(
+        allFilms.map(async (film: TmdbFilm): Promise<imdbService.ImdbBatchFilmRequest> => ({
+            tmdbID: film.id,
+            imdbID: await getImdbID(film.id),
+        }))
+    );
+
+    // Chunk IMDb requests into batches of 10
+    const imdbChunks = chunk(imdbRequests.filter((film) => !!film.imdbID), 10);
+
+    // Fetch all IMDb rating batches
+    const allRatingsChunked = await Promise.all(
+        imdbChunks.map((chunk) => imdbService.getFilmRatingsByIds(chunk))
+    );
+
+    // Flatten the results into a single array
+    const allImdbRatings: Partial<Film>[] = allRatingsChunked.flat();
+
+    const films = await Promise.all(
+        allFilms.filter((film: TmdbFilm) => !!film.poster_path)
+            .map(async (film: TmdbFilm): Promise<Film> =>
+            {
+                const genreResult = await new GetGenresByIDsQueryHandler().handle({
+                    genreIds: film.genre_ids,
+                });
+
+                const imdbInfo = allImdbRatings.find((r) => r.tmdb_id === film.id);
+
+                return {
+                    tmdb_id: film.id,
+                    title: film.title,
+                    overview: film.overview,
+                    poster_path: film.poster_path,
+                    release_date: new Date(film.release_date).getFullYear(),
+                    vote_count: numberFormatter.formatNumber(film.vote_count),
+                    vote_average: film.vote_average,
+                    imdb_id: imdbInfo?.imdb_id,
+                    imdb_rating: imdbInfo?.imdb_rating ?? 0,
+                    imdb_vote_count: imdbInfo?.imdb_vote_count ?? "0",
+                    metacritic_url: imdbInfo?.metacritic_url,
+                    metacritic_rating: imdbInfo?.metacritic_rating ?? 0,
+                    metacritic_vote_count: imdbInfo?.metacritic_vote_count ?? "0",
+                    genres: genreResult.success ? genreResult.data.genres : [],
+                };
+            })
+    );
+
+    return orderBy(
+        films,
+        [film => Number(numberFormatter.parseFormattedNumber(film.imdb_vote_count))],
+        ["desc"]
+    );
+}
+
 async function getImdbID(id: number): Promise<string>
 {
-    const response = await tmdbClient.get(`/movie/${ id }`);
+    const response = await get(`/movie/${ id }`);
 
     return response.data.imdb_id;
 }

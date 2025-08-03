@@ -62,7 +62,7 @@ export function FilmList({ title, url, fontawesome }: Props)
             ) : (
                 <div className="film-list">
                     {films.map((film: Film) => (
-                        <FilmTile key={film.id} film={film} onClick={() => handleFilmClick(film)} />
+                        <FilmTile key={film.tmdb_id} film={film} onClick={() => handleFilmClick(film)} />
                     ))}
                 </div>
             )}

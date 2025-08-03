@@ -1,7 +1,7 @@
 import { Genre } from "./Genre";
 
 export type Film = {
-    id: number;
+    tmdb_id?: number;
     title: string;
     overview: string;
     poster_path: string;

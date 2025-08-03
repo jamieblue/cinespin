@@ -30,14 +30,6 @@ async function getRandomBadFilm(): Promise<Film>
     return (await response.data) as Film;
 }
 
-async function getPopularFilms(): Promise<Film[]>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/popular"
-    );
-    return (await response.data) as Film[];
-}
-
 async function setupButtons()
 {
     const goodFilmbutton = document.getElementById("randomGoodFilm");
@@ -98,24 +90,54 @@ async function setupButtons()
     }
 }
 
-function populateHomepage()
+function showHomepageFilms()
 {
-
-}
-
-document.addEventListener("DOMContentLoaded", () =>
-{
-    setupButtons();
-
-    const target = document.getElementById("films");
-    if (target)
+    const filmsContainer = document.getElementById("films");
+    if (filmsContainer)
     {
         render(
             <>
                 <FilmList title="Popular Films" url="http://localhost:3001/api/tmdb/popular" fontawesome="fa-solid fa-fire" />
                 <FilmList title="Upcoming Releases" url="http://localhost:3001/api/tmdb/upcoming" fontawesome="fa-solid fa-calendar-days" />
             </>,
-            target
-        )
+            filmsContainer
+        );
+    }
+}
+
+let searchTimeout: number | undefined;
+
+document.addEventListener("DOMContentLoaded", () =>
+{
+    setupButtons();
+    showHomepageFilms();
+
+    const searchInput = document.getElementById("movieSearch") as HTMLInputElement;
+    if (searchInput)
+    {
+        searchInput.addEventListener("keyup", async (event) =>
+        {
+            // Debounce logic
+            if (searchTimeout) clearTimeout(searchTimeout);
+            const query = searchInput.value.trim();
+
+            if (!query || query === "")
+            {
+                showHomepageFilms();
+                return;
+            }
+
+            searchTimeout = window.setTimeout(() =>
+            {
+                const filmsContainer = document.getElementById("films");
+                if (filmsContainer)
+                {
+                    render(
+                        <FilmList title={`Search Results for "${ query }"`} url={`http://localhost:3001/api/tmdb/search?searchTerm=${ encodeURIComponent(query) }`} fontawesome="fa-solid fa-magnifying-glass" />,
+                        filmsContainer
+                    );
+                }
+            }, 200);
+        });
     }
 });

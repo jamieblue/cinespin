@@ -187,7 +187,7 @@ export function FullscreenFilm({ film, onClose }: Props)
 
                     {(currentFilm.vote_average !== 0 &&
                         currentFilm.vote_count !== "0") && (
-                            <a href={`${ TMDB_FILM_BASE_URL }/${ currentFilm.id }`} target="_blank" rel="noopener noreferrer">
+                            <a href={`${ TMDB_FILM_BASE_URL }/${ currentFilm.tmdb_id }`} target="_blank" rel="noopener noreferrer">
                                 <div id="tmdb-rating">
                                     <div class="rating-row">
                                         <img

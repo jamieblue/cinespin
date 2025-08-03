@@ -1,7 +1,20 @@
 import express from "express";
 import * as tmdbService from "../services/tmdbService";
+import { Film } from "../../shared/models/Film";
 
 const router = express.Router();
+
+router.get("/search", async (req, res) =>
+{
+    try
+    {
+        const films: Film[] = await tmdbService.search(req.query.searchTerm as string);
+        res.json(films);
+    } catch (err)
+    {
+        res.status(500).json({ error: "Failed to fetch films" });
+    }
+});
 
 router.get("/random-film", async (req, res) =>
 {

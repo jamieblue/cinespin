@@ -9,19 +9,22 @@
     justify-items: center;
     border-radius: 8px;
     width: 180px;
-    height: 250px;
+    height: 225px;
     flex: 0 0 auto;
     transition: 0.2s ease-in-out;
     color: white;
 
-    img
+    .image-wrapper:before
     {
-        border-radius: 8px;
-        width: 180px;
-        height: 250px;
-        object-fit: cover;
-        border: 3px solid transparent;
-        transition: border 0.3s;
+        content: "";
+        border: 3px solid $green;
+        position: absolute;
+        left: -3px;
+        top: -3px;
+        right: -3px;
+        bottom: -3px;
+        opacity: 0;
+        border-radius: 11px;
     }
 
     .image-wrapper
@@ -32,6 +35,12 @@
 
         .film-tile-img
         {
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+            border-radius: 8px;
+            width: 180px;
+            height: 225px;
+            object-fit: cover;
+            transition: border 0.3s;
             width: 100%;
             height: 100%;
             border-radius: 8px;
@@ -52,7 +61,7 @@
         {
             position: absolute;
             top: 0;
-            left: 0;
+            left: -10%;
             width: 100%;
             height: 100%;
             border-radius: 8px;
@@ -73,11 +82,11 @@
         left: 0px;
         width: 100%;
         position: absolute;
-        bottom: 102%;
+        bottom: 104.5%;
         background: $primary;
-        padding: 5px;
+        padding: 10px 5px;
         border-radius: 5px;
-        font-size: 13px;
+        font-size: 14px;
         text-align: center;
         font-weight: bold;
         transition: opacity 0.25s ease-in-out;
@@ -90,8 +99,8 @@
         align-items: center;
         justify-content: center;
         position: absolute;
-        bottom: 15%;
-        left: 52%;
+        bottom: 5%;
+        left: 50%;
         transform: translateX(-50%);
         background: rgba(0, 0, 0, 0.85);
         padding: 5px 10px;
@@ -110,6 +119,8 @@
             justify-content: center;
             font-weight: bold;
             color: white;
+            margin: 0px 2.5px;
+            padding: 5px 0px;
         }
 
         img
@@ -125,13 +136,9 @@
     {
         cursor: pointer;
 
-        .image-wrapper
+        .image-wrapper:before
         {
-            img
-            {
-                border: 3px solid $green;
-                transition: border 0.3s;
-            }
+            opacity: 1;
         }
 
         .title
