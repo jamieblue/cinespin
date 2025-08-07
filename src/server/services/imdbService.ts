@@ -3,8 +3,7 @@ dotenv.config();
 import axios from "axios";
 import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/imdb";
-import { Film } from "../../shared/models/Film";
-import { Genre } from "../../shared/models/Genre";
+import { Film } from "../../shared/models/films/Film";
 import Bottleneck from "bottleneck";
 
 const IMDB_API = constants.IMDB_API_BASE_URL;

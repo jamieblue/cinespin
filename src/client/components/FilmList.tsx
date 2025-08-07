@@ -1,7 +1,7 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
 import { useState, useEffect } from "preact/hooks";
-import { Film } from "../../shared/models/Film";
+import { Film } from "../../shared/models/films/Film";
 import axios from "axios";
 import { FilmTile } from "./FilmTile";
 import { render } from "preact";

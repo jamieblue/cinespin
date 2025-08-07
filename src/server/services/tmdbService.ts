@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import axios from "axios";
-import { Film } from "../../shared/models/Film";
+import { Film } from "../../shared/models/films/Film";
 import * as imdbService from "./imdbService";
 import * as numberFormatter from "../../shared/util/numberFormatter";
 import * as constants from "../../shared/constants/tmdb";

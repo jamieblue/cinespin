@@ -18,3 +18,15 @@ model Genres {
   name String @unique
   createdDate DateTime
 }
+
+model Users {
+  id          Int      @id @default(autoincrement())
+  googleId    String   @unique
+  email       String   @unique
+  name        String
+  createdDate   DateTime
+  updatedDate   DateTime
+  
+  // Future relations for user lists, etc.
+  // lists       UserList[]
+}

@@ -1,7 +1,7 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
 import { useState, useEffect } from "preact/hooks";
-import { Film } from "../../shared/models/Film";
+import { Film } from "../../shared/models/films/Film";
 import * as constants from "../../shared/constants/tmdb";
 import { getRatingColor } from "../../shared/util/metacriticHelper";
 
@@ -59,6 +59,7 @@ export function FilmTile({ film, onClick }: Props)
                 />
                 {showPlaceholder && (
                     <div className="loading-placeholder pulsate">
+                        <span className="loader"></span>
                     </div>
                 )}
             </div>

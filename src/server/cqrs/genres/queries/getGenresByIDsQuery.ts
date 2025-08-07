@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { QueryHandler } from "../../queryHandler";
 import { Result } from "../../result";
-import { Genre } from "../../../../shared/models/Genre";
+import { Genre } from "../../../../shared/models/films/Genre";
 
 const prisma = new PrismaClient();
 
@@ -33,7 +33,7 @@ export class GetGenresByIDsQueryHandler
             success: true,
             data:
             {
-                genres: genres.map((genre) => ({
+                genres: genres.map((genre: Genre) => ({
                     id: genre.id,
                     name: genre.name,
                     createdDate: genre.createdDate,

@@ -5,7 +5,8 @@
 		"outDir": "dist/public/js",
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact",
-		"baseUrl": "src"
+		"baseUrl": "src",
+        "incremental": false
 	},
 	"include": [
 		"src/client",

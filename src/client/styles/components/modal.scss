@@ -1,0 +1,74 @@
+@use "../_variables" as *;
+
+.modal
+{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: $secondary;
+    width: 700px;
+    height: 400px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+
+    .modal-title
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        font-size: 22px;
+        padding: 15px 0px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #0d0d0d;
+
+        .close-button
+        {
+            position: absolute;
+            top: 5px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            transition: color 0.25s ease-in-out;
+
+            &:hover
+            {
+                color: rgba(white, 0.3);
+                transition: color 0.25s ease-in-out;
+            }
+        }
+    }
+
+    .modal-content
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 20px;
+        border-radius: 5px;
+    }
+}
+
+#modalContainer
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+}

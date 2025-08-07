@@ -1,6 +1,6 @@
 import express from "express";
 import * as tmdbService from "../services/tmdbService";
-import { Film } from "../../shared/models/Film";
+import { Film } from "../../shared/models/films/Film";
 
 const router = express.Router();
 

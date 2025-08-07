@@ -2,6 +2,7 @@
 
 <html>
     <head>
+        <title>CineSpin</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -15,13 +16,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <nav>
-            <a href="#"><i class="fa-solid fa-plus"></i> &nbsp Create a List</a>
-        </nav>
+        <div id="navigation"></div>
+        
         <div class="main">
-            <div id="randomSelectedFilm">
-
-            </div>
+            <div id="randomSelectedFilm"></div>
             <div class="container" id="homeSplash">
                 <h1><i class="fa-solid fa-film"></i> CineSpin</h1>
                 <input class="search-bar" id="movieSearch" type="text" placeholder="Search for a movie" />
@@ -31,9 +29,7 @@
                 <button type="button" class="spin-button" id="randomFilm"><i class="fa-solid fa-rotate"></i><span>Random Film</span></button>
                 <button type="button" class="spin-button" id="randomBadFilm"><i class="fa-solid fa-thumbs-down"></i><span>Random Bad Film</span></button>
             </div>
-            <div class="container" id="films">
-
-            </div>
+            <div class="container" id="films"></div>
         </div>
     </body>
 </html>
