@@ -3,7 +3,7 @@ import { Result } from "../../result";
 import { CommandHandler } from "../../commandHandler";
 import { PrismaErrorHandler } from "../../../../shared/util/prismaErrorHandler";
 import * as DateTimeProvider from "../../../../shared/util/dateTimeProvider";
-import { Genre } from "../../../../shared/models/Genre";
+import { Genre } from 'src/shared/models/films/Genre';
 
 const prisma = new PrismaClient();
 

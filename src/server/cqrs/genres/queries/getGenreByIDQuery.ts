@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { QueryHandler } from "../../queryHandler";
 import { Result } from "../../result";
-import { Genre } from "../../../../shared/models/Genre";
+import { Genre } from "../../../../shared/models/films/Genre";
 
 const prisma = new PrismaClient();
 

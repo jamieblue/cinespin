@@ -3,8 +3,9 @@
 import { render } from "preact";
 import { FullscreenFilm } from "./components/FullscreenFilm";
 import axios from "axios";
-import { Film } from "../shared/models/Film";
+import { Film } from "../shared/models/films/Film";
 import { FilmList } from "./components/FilmList";
+import { Navigation } from "./components/Navigation";
 
 async function getRandomFilm(): Promise<Film>
 {
@@ -109,6 +110,11 @@ let searchTimeout: number | undefined;
 
 document.addEventListener("DOMContentLoaded", () =>
 {
+    const navigation = document.getElementById("navigation");
+    if (navigation)
+    {
+        render(<Navigation />, navigation);
+    }
     setupButtons();
     showHomepageFilms();
 
@@ -117,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () =>
     {
         searchInput.addEventListener("keyup", async (event) =>
         {
-            // Debounce logic
             if (searchTimeout) clearTimeout(searchTimeout);
             const query = searchInput.value.trim();
 
@@ -137,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () =>
                         filmsContainer
                     );
                 }
-            }, 200);
+            }, 150);
         });
     }
 });

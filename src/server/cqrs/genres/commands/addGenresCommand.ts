@@ -2,7 +2,7 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { Result } from "../../result";
 import { CommandHandler } from "../../commandHandler";
 import { PrismaErrorHandler } from "../../../../shared/util/prismaErrorHandler";
-import { Genre } from "../../../../shared/models/Genre";
+import { Genre } from "../../../../shared/models/films/Genre";
 
 const prisma = new PrismaClient();
 

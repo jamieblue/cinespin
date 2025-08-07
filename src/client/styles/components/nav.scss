@@ -1,12 +1,14 @@
 @use "../_variables" as *;
 
-nav {
+nav
+{
     height: 50px;
     display: flex;
     justify-content: end;
     align-items: center;
 
-    a {
+    button
+    {
         color: white;
         text-decoration: none;
         padding: 10px 25px;
@@ -16,7 +18,8 @@ nav {
         font-weight: bold;
         transition: 0.25s ease-in-out;
 
-        &:hover {
+        &:hover
+        {
             background: #2f2f33;
             transition: 0.25s ease-in-out;
         }

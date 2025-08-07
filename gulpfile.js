@@ -73,7 +73,13 @@ function serverScripts()
 {
     return serverTSProject
         .src()
-        .pipe(serverTSProject())
+        .pipe(serverTSProject({
+            noImplicitAny: true,
+            noErrorTruncation: true
+        }))
+        .on('error', function(err) {
+            this.emit('end');
+        })
         .js.pipe(gulp.dest(paths.dest.serverJS));
 }
 
