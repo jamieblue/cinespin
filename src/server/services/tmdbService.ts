@@ -123,8 +123,8 @@ export async function getPopularFilms(): Promise<Film[]>
         }))
     );
 
-    // 2. Chunk IMDb requests into batches of 10
-    const imdbChunks = chunk(imdbRequests, 10);
+    // 2. Chunk IMDb requests into batches of 5
+    const imdbChunks = chunk(imdbRequests, 5);
 
     // 3. Fetch all IMDb rating batches
     const allRatingsChunked = await Promise.all(
