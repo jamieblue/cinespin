@@ -2,34 +2,9 @@
 /** @jsxImportSource preact */
 import { render } from "preact";
 import { FullscreenFilm } from "./components/FullscreenFilm";
-import axios from "axios";
-import { Film } from "../shared/models/films/Film";
 import { FilmList } from "./components/FilmList";
 import { Navigation } from "./components/Navigation";
-
-async function getRandomFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-film"
-    );
-    return (await response.data) as Film;
-}
-
-async function getRandomGoodFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-good-film"
-    );
-    return (await response.data) as Film;
-}
-
-async function getRandomBadFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-bad-film"
-    );
-    return (await response.data) as Film;
-}
+import { filmService } from "../shared/util/filmService";
 
 async function setupButtons()
 {
@@ -42,7 +17,7 @@ async function setupButtons()
     {
         randomFilmbutton.addEventListener("click", async () =>
         {
-            const film = await getRandomFilm();
+            const film = await filmService.getRandomFilm();
 
             render(
                 <FullscreenFilm
@@ -58,7 +33,7 @@ async function setupButtons()
     {
         goodFilmbutton.addEventListener("click", async () =>
         {
-            const film = await getRandomGoodFilm();
+            const film = await filmService.getRandomGoodFilm();
 
             render(
                 <FullscreenFilm
@@ -74,7 +49,7 @@ async function setupButtons()
     {
         badFilmbutton.addEventListener("click", async () =>
         {
-            const film = await getRandomBadFilm();
+            const film = await filmService.getRandomBadFilm();
             if (!film)
             {
                 target.textContent = "Failed to load film.";
@@ -98,8 +73,8 @@ function showHomepageFilms()
     {
         render(
             <>
-                <FilmList title="Popular Films" url="http://localhost:3001/api/tmdb/popular" fontawesome="fa-solid fa-fire" />
-                <FilmList title="Upcoming Releases" url="http://localhost:3001/api/tmdb/upcoming" fontawesome="fa-solid fa-calendar-days" />
+                <FilmList title="Popular Films" fetchFilms={async () => await filmService.getPopularFilms()} fontawesome="fa-solid fa-fire" />
+                <FilmList title="Upcoming Releases" fetchFilms={async () => await filmService.getUpcomingFilms()} fontawesome="fa-solid fa-calendar-days" />
             </>,
             filmsContainer
         );
@@ -138,11 +113,11 @@ document.addEventListener("DOMContentLoaded", () =>
                 if (filmsContainer)
                 {
                     render(
-                        <FilmList title={`Search Results for "${ query }"`} url={`http://localhost:3001/api/tmdb/search?searchTerm=${ encodeURIComponent(query) }`} fontawesome="fa-solid fa-magnifying-glass" />,
+                        <FilmList title={`Search Results for "${ query }"`} fetchFilms={async () => await filmService.searchFilms(encodeURIComponent(query))} fontawesome="fa-solid fa-magnifying-glass" />,
                         filmsContainer
                     );
                 }
-            }, 150);
+            }, 500);
         });
     }
 });

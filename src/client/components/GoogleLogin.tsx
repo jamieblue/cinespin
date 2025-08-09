@@ -37,7 +37,7 @@ export function GoogleLogin()
     const handleLogin = () =>
     {
         setLoading(true)
-        window.location.href = '/auth/google';
+        window.location.href = authService.getAuthURL();
     };
 
     return (

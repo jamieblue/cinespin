@@ -8,6 +8,7 @@ import * as TMDBconstants from "../../shared/constants/tmdb";
 import * as IMDBconstants from "../../shared/constants/imdb";
 import { scrollLock } from "../../shared/util/scrollLock";
 import { getRatingColor } from "../../shared/util/metacriticHelper";
+import { filmService } from "../../shared/util/filmService";
 
 const TMDB_IMAGE_BASE_URL = TMDBconstants.TMDB_IMAGE_BASE_URL;
 const TMDB_IMAGE_SIZES = TMDBconstants.TMDB_IMAGE_SIZES;
@@ -18,30 +19,6 @@ type Props = {
     film: Film;
     onClose: () => void;
 };
-
-async function getRandomFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-film"
-    );
-    return response.data as Film;
-}
-
-async function getRandomGoodFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-good-film"
-    );
-    return response.data as Film;
-}
-
-async function getRandomBadFilm(): Promise<Film>
-{
-    const response = await axios.get(
-        "http://localhost:3001/api/tmdb/random-bad-film"
-    );
-    return response.data as Film;
-}
 
 export function FullscreenFilm({ film, onClose }: Props)
 {
@@ -70,14 +47,16 @@ export function FullscreenFilm({ film, onClose }: Props)
         switch (filmType)
         {
             case RandomFilmType.Good:
-                next = await getRandomGoodFilm();
+                next = await filmService.getRandomGoodFilm();
                 break;
             case RandomFilmType.Bad:
-                next = await getRandomBadFilm();
+                next = await filmService.getRandomBadFilm();
                 break;
             case RandomFilmType.Neutral:
+                next = await filmService.getRandomFilm(); // Default to good film
+                break;
             default:
-                next = await getRandomFilm(); // Default to good film
+                next = await filmService.getRandomGoodFilm(); // Default to good film
                 break;
         }
 

@@ -2,19 +2,18 @@
 /** @jsxImportSource preact */
 import { useState, useEffect } from "preact/hooks";
 import { Film } from "../../shared/models/films/Film";
-import axios from "axios";
 import { FilmTile } from "./FilmTile";
 import { render } from "preact";
 import { FullscreenFilm } from "./FullscreenFilm";
 
 type Props = {
     title: string;
-    url: string;
+    fetchFilms: () => Promise<Film[]>;
     fontawesome?: string;
 };
 
 
-export function FilmList({ title, url, fontawesome }: Props)
+export function FilmList({ title, fetchFilms, fontawesome }: Props)
 {
     const [films, setFilms] = useState<Film[]>([]);
     const [loading, setLoading] = useState(false);
@@ -36,13 +35,13 @@ export function FilmList({ title, url, fontawesome }: Props)
 
     useEffect(() =>
     {
-        async function fetchFilms()
+        async function loadFilms()
         {
             setLoading(true);
             try
             {
-                const response = await axios.get(url);
-                setFilms(response.data as Film[]);
+                const films = await fetchFilms();
+                setFilms(films);
             } catch (error)
             {
                 console.error("Failed to fetch films:", error);
@@ -51,8 +50,8 @@ export function FilmList({ title, url, fontawesome }: Props)
                 setLoading(false);
             }
         }
-        fetchFilms();
-    }, [url]);
+        loadFilms();
+    }, [fetchFilms]);
 
     return (
         <div className="film-list-container">

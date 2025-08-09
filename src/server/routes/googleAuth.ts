@@ -10,10 +10,13 @@ router.get('/google',
 
 // Google OAuth callback
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/?error=auth_failed' }),
+    passport.authenticate('google', {
+        failureRedirect: `${ process.env.CLIENT_BASE_URL || 'http://localhost:3000' }/?error=auth_failed`
+    }),
     (req, res) =>
     {
-        res.redirect('/');
+        const clientUrl = process.env.CLIENT_BASE_URL || 'http://localhost:3000';
+        res.redirect(clientUrl);
     }
 );
 
