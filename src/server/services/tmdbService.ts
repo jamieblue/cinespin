@@ -230,7 +230,7 @@ export async function search(searchTerm: string): Promise<Film[]>
     );
 
     // Chunk IMDb requests into batches of 10
-    const imdbChunks = chunk(imdbRequests.filter((film) => !!film.imdbID), 10);
+    const imdbChunks = chunk(imdbRequests.filter((film) => !!film.imdbID), 5);
 
     // Fetch all IMDb rating batches
     const allRatingsChunked = await Promise.all(
@@ -271,8 +271,9 @@ export async function search(searchTerm: string): Promise<Film[]>
 
     return orderBy(
         films,
-        [film => Number(numberFormatter.parseFormattedNumber(film.imdb_vote_count))],
-        ["desc"]
+        [film => Number(numberFormatter.parseFormattedNumber(film.imdb_vote_count)),
+            'imdb_rating', 'vote_count', 'vote_average'],
+        ['desc', 'desc', 'desc']
     );
 }
 
