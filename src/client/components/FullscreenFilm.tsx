@@ -3,7 +3,6 @@
 import { useState, useEffect } from "preact/hooks";
 import { Film } from "../../shared/models/films/Film";
 import { RandomFilmType } from "../../shared/models/films/RandomFilmType";
-import axios from "axios";
 import * as TMDBconstants from "../../shared/constants/tmdb";
 import * as IMDBconstants from "../../shared/constants/imdb";
 import { scrollLock } from "../../shared/util/scrollLock";
