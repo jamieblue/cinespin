@@ -4,6 +4,15 @@ import { User } from "src/shared/models/users/user";
 class AuthService
 {
     private static instance: AuthService;
+    private readonly apiBaseUrl: string;
+
+    private constructor()
+    {
+        // Hardcode for development, use relative for production
+        this.apiBaseUrl = window.location.hostname === 'localhost'
+            ? 'http://localhost:3001'
+            : ''; // Relative URLs in production (same domain)
+    }
 
     public static getInstance(): AuthService
     {
@@ -15,11 +24,16 @@ class AuthService
         return AuthService.instance;
     }
 
+    getAuthURL(): string
+    {
+        return `${ this.apiBaseUrl }/auth/google`;
+    }
+
     async getCurrentUser(): Promise<User | null>
     {
         try
         {
-            const response = await axios.get(`/auth/me`, {
+            const response = await axios.get(`${ this.apiBaseUrl }/auth/me`, {
                 withCredentials: true
             });
             return response.data.user;
@@ -33,7 +47,7 @@ class AuthService
     {
         try
         {
-            await axios.post(`/auth/logout`, {}, {
+            await axios.post(`${ this.apiBaseUrl }/auth/logout`, {}, {
                 withCredentials: true
             });
         } catch (error)
