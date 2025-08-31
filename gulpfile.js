@@ -2,6 +2,7 @@ const gulp = require("gulp");
 const sass = require("gulp-sass")(require("sass"));
 const browserSync = require("browser-sync").create();
 const ts = require("gulp-typescript");
+const size = require("gulp-size").default || require("gulp-size");
 
 // Projects
 const serverTSProject = ts.createProject("tsconfig.server.json");
@@ -40,6 +41,12 @@ function bundleClient()
             target: ["es2020"],
             loader: { ".tsx": "tsx", ".ts": "ts" },
             define: { "process.env.NODE_ENV": '"development"' },
+        })
+        .then(() =>
+        {
+            // Report the size of the bundle
+            return gulp.src(`${paths.dest.clientJS}/bundle.js`)
+                .pipe(size({ showFiles: true }));
         })
         .then(() =>
         {
@@ -84,11 +91,20 @@ function serverScripts()
 }
 
 // Watchers & Live Reload
-function watch()
-{
+function watch() {
     browserSync.init({
         server: {
             baseDir: "./dist/public",
+            index: "index.html",
+            middleware: [
+                function (req, res, next) {
+                    // If request doesn’t look like a file (no extension) → serve index.html
+                    if (!req.url.includes('.') && req.url !== '/favicon.ico') {
+                        req.url = '/index.html';
+                    }
+                    next();
+                }
+            ]
         },
         port: 3000,
         ui: {
@@ -101,6 +117,7 @@ function watch()
     gulp.watch(paths.client.static, staticAssets);
     gulp.watch(paths.server.scripts, gulp.series(serverScripts));
 }
+
 
 // Tasks
 const build = gulp.series(

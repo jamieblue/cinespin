@@ -1,46 +1,23 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
-import { useState, useEffect } from "preact/hooks";
-import { render } from "preact";
-import axios from "axios";
-import { LoginModal } from "./LoginModal";
-import { authService } from "../../shared/util/authService";
+import { ModalSize } from "../../shared/models/modals/ModalSize";
+import { useAuth } from "../contexts/AuthContext";
+import { useModal } from "../contexts/ModalContext";
+import { CreateListForm } from "./CreateListForm";
+import { GoogleLogin } from "./GoogleLogin";
+import { ViewUserLists } from "./ViewUserLists";
+
 
 export function Navigation()
 {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() =>
-    {
-        checkAuthStatus();
-    }, []);
-
-    const checkAuthStatus = async () =>
-    {
-        try
-        {
-            const user = await authService.getCurrentUser();
-            setUser(user);
-        } catch (error)
-        {
-            // Don't log 401 errors as they're expected when not authenticated
-            if (axios.isAxiosError(error) && error.response?.status !== 401)
-            {
-                console.error('Auth check failed:', error);
-            }
-        } finally
-        {
-            setLoading(false);
-        }
-    };
+    const { user, logout } = useAuth();
+    const { showModal } = useModal();
 
     const handleLogout = async () =>
     {
         try
         {
-            await authService.logout();
-            setUser(null);
+            await logout();
         } catch (error)
         {
             console.error('Logout failed:', error);
@@ -49,40 +26,40 @@ export function Navigation()
 
     const showLoginModal = () =>
     {
-        const modalContainer = document.getElementById("modalContainer");
-        if (!modalContainer)
-        {
-            const newModalContainer = document.createElement("div");
-            newModalContainer.id = "modalContainer";
-            document.body.appendChild(newModalContainer);
-        }
-
-        const container = document.getElementById("modalContainer");
-        if (container)
-        {
-            render(
-                <LoginModal onClose={hideLoginModal} />,
-                container
-            );
-        }
+        showModal(<GoogleLogin />, 'Sign in');
     };
 
-    const hideLoginModal = () =>
+    const handleViewLists = () =>
     {
-        const modalContainer = document.getElementById("modalContainer");
-        modalContainer?.remove();
+        showModal(<ViewUserLists />, 'My Lists', ModalSize.Large);
+    };
+
+    const handleCreateList = () =>
+    {
+        showModal(<CreateListForm />, 'Create List', ModalSize.Medium);
     };
 
     return (
-        <nav>
-            {user ? (
-                <>
-                    <button type="button" id="createListButton"><i class="fa-solid fa-plus"></i> &nbsp; Create a List</button>
-                    <button type="button" id="logoutButton" onClick={handleLogout}><i class="fa-solid fa-right-from-bracket"></i> &nbsp;Logout</button>
-                </>
-            ) : (
-                <button type="button" id="loginButton" onClick={showLoginModal}><i class="fa-solid fa-plus"></i> &nbsp; Create a List</button>
-            )}
-        </nav>
+        <>
+            <nav>
+                {user ? (
+                    <>
+                        <button type="button" id="viewListsButton" onClick={handleViewLists}>
+                            <i class="fa-solid fa-list"></i> &nbsp; My Lists
+                        </button>
+                        <button type="button" id="createListButton" onClick={handleCreateList}>
+                            <i class="fa-solid fa-plus"></i> &nbsp; Create a List
+                        </button>
+                        <button type="button" id="logoutButton" onClick={handleLogout}>
+                            <i class="fa-solid fa-right-from-bracket"></i> &nbsp;Logout
+                        </button>
+                    </>
+                ) : (
+                    <button type="button" id="loginButton" onClick={showLoginModal}>
+                        <i class="fa-solid fa-user"></i> &nbsp; Login
+                    </button>
+                )}
+            </nav>
+        </>
     );
 }

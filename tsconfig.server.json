@@ -20,7 +20,10 @@
         "src/shared/models",
         "src/shared/util",
         "src/shared/constants",
-        "src/shared/global"
+        "src/shared/global",
+        "src/shared/lists",
+        "src/shared/modals",
+        "src/shared/services/listService.ts"
     ],
     "exclude": [
         "node_modules"

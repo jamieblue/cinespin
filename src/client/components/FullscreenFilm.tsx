@@ -7,7 +7,12 @@ import * as TMDBconstants from "../../shared/constants/tmdb";
 import * as IMDBconstants from "../../shared/constants/imdb";
 import { scrollLock } from "../../shared/util/scrollLock";
 import { getRatingColor } from "../../shared/util/metacriticHelper";
-import { filmService } from "../../shared/util/filmService";
+import { filmService } from "../../shared/services/filmService";
+import { useSelectedFilm } from "../contexts/SelectedFilmContext";
+import { useModal } from "../contexts/ModalContext";
+import { useAuth } from "../contexts/AuthContext";
+import { ModalSize } from "../../shared/models/modals/ModalSize";
+import { AddToUserList } from "./AddToUserList";
 
 const TMDB_IMAGE_BASE_URL = TMDBconstants.TMDB_IMAGE_BASE_URL;
 const TMDB_IMAGE_SIZES = TMDBconstants.TMDB_IMAGE_SIZES;
@@ -21,15 +26,23 @@ type Props = {
 
 export function FullscreenFilm({ film, onClose }: Props)
 {
+    const { user } = useAuth();
+    const { isVisible: modalVisible, showModal } = useModal();
     const [isClosing, setIsClosing] = useState(false);
+    const [selectedFilm] = useSelectedFilm();
     const [currentFilm, setCurrentFilm] = useState(film);
     const [queuedFilm, setQueuedFilm] = useState<Film | null>(null);
 
     useEffect(() =>
     {
+        setCurrentFilm(selectedFilm || film);
         scrollLock.enable();
-        return () => scrollLock.disable();
-    }, []);
+
+        return () =>
+        {
+            modalVisible ? scrollLock.enable() : scrollLock.disable();
+        };
+    }, [selectedFilm, modalVisible]);
 
     // Preload the image to avoid flickering
     const preloadImage = (src: string): Promise<void> =>
@@ -46,16 +59,32 @@ export function FullscreenFilm({ film, onClose }: Props)
         switch (filmType)
         {
             case RandomFilmType.Good:
-                next = await filmService.getRandomGoodFilm();
+                const result = await filmService.getRandomGoodFilm();
+                if (result.success)
+                {
+                    next = result.data.film;
+                }
                 break;
             case RandomFilmType.Bad:
-                next = await filmService.getRandomBadFilm();
+                const badResult = await filmService.getRandomBadFilm();
+                if (badResult.success)
+                {
+                    next = badResult.data.film;
+                }
                 break;
             case RandomFilmType.Neutral:
-                next = await filmService.getRandomFilm(); // Default to good film
+                const neutralResult = await filmService.getRandomFilm();
+                if (neutralResult.success)
+                {
+                    next = neutralResult.data.film;
+                }
                 break;
             default:
-                next = await filmService.getRandomGoodFilm(); // Default to good film
+                const defaultResult = await filmService.getRandomGoodFilm();
+                if (defaultResult.success)
+                {
+                    next = defaultResult.data.film;
+                }
                 break;
         }
 
@@ -63,7 +92,12 @@ export function FullscreenFilm({ film, onClose }: Props)
             `${ TMDB_IMAGE_BASE_URL }/${ TMDB_IMAGE_SIZES["500"] }${ next.poster_path }`
         );
         setQueuedFilm(next);
-        setIsClosing(true); // trigger fade-out of current
+        setIsClosing(true);
+    };
+
+    const handleAddToListClick = () =>
+    {
+        showModal(<AddToUserList filmProp={currentFilm} />, "Add to List", ModalSize.Large, true);
     };
 
     const handleClose = () =>
@@ -79,7 +113,7 @@ export function FullscreenFilm({ film, onClose }: Props)
             {
                 setCurrentFilm(queuedFilm);
                 setQueuedFilm(null);
-                setIsClosing(false); // trigger fade-in
+                setIsClosing(false);
             } else
             {
                 onClose();
@@ -89,7 +123,7 @@ export function FullscreenFilm({ film, onClose }: Props)
 
     return (
         <div
-            class={`fullscreen-film ${ isClosing ? "slide-out" : "slide-in" }`}
+            class={`fullscreen-film ${ isClosing ? "fade-out" : "fade-in" }`}
             onAnimationEnd={onAnimationEnd}
         >
             <div class="close-button" onClick={handleClose}>
@@ -104,7 +138,7 @@ export function FullscreenFilm({ film, onClose }: Props)
             <div class="details">
                 <h2 class="title">{currentFilm.title}</h2>
                 <div class="release-year">
-                    {currentFilm.release_date.toString().substring(0, 4)}
+                    {currentFilm.release_year}
                 </div>
                 <div class="overview">{currentFilm.overview}</div>
                 {currentFilm.genres.length > 0 && (
@@ -163,8 +197,8 @@ export function FullscreenFilm({ film, onClose }: Props)
                             </a>
                         )}
 
-                    {(currentFilm.vote_average !== 0 &&
-                        currentFilm.vote_count !== "0") && (
+                    {(currentFilm.tmdb_rating !== 0 &&
+                        currentFilm.tmdb_vote_count !== "0") && (
                             <a href={`${ TMDB_FILM_BASE_URL }/${ currentFilm.tmdb_id }`} target="_blank" rel="noopener noreferrer">
                                 <div id="tmdb-rating">
                                     <div class="rating-row">
@@ -172,10 +206,10 @@ export function FullscreenFilm({ film, onClose }: Props)
                                             src="/content/images/svg/tmdb_logo.svg"
                                             alt="TMDB:"
                                         />
-                                        {currentFilm.vote_average.toFixed(1)}
+                                        {currentFilm.tmdb_rating.toFixed(1)}
                                     </div>
                                     <div class="vote-count">
-                                        {currentFilm.vote_count} votes
+                                        {currentFilm.tmdb_vote_count} votes
                                     </div>
                                 </div>
                             </a>
@@ -201,6 +235,14 @@ export function FullscreenFilm({ film, onClose }: Props)
                     >
                         <i class="fa-solid fa-thumbs-down"></i> Random Bad Film
                     </button>
+
+                    {user && (
+                        <button
+                            type="button"
+                            onClick={handleAddToListClick}
+                        >
+                            <i class="fa-solid fa-plus"></i> Add Film to a List
+                        </button>)}
                 </div>
             </div>
         </div>

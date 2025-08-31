@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Result } from "../../result";
-import { CommandHandler } from "../../commandHandler";
 import { PrismaErrorHandler } from "../../../../shared/util/prismaErrorHandler";
 import { User } from "src/shared/models/users/user";  // Use the path mapping instead
 import * as dateTimeProvider from "../../../../shared/util/dateTimeProvider";
+import { ListPrivacyType } from "../../../../shared/models/lists/ListPrivacyType";
+import * as listHelper from "../../../../shared/util/listHelper";
 
 const prisma = new PrismaClient();
 
@@ -15,18 +16,26 @@ interface AddOrUpdateGoogleUserCommandRequest
 }
 
 export class AddOrUpdateGoogleUserCommandHandler
-    implements CommandHandler<AddOrUpdateGoogleUserCommandRequest, { user: User }>
 {
     async handle(request: AddOrUpdateGoogleUserCommandRequest): Promise<Result<{ user: User }>>
     {
         try
         {
+            if (request.email.trim().length === 0)
+            {
+                return {
+                    success: false,
+                    error: "Your email address must be verified.",
+                };
+            }
+
             const user = await prisma.users.upsert({
                 where: { googleId: request.googleId },
                 update: {
                     email: request.email,
                     name: request.name,
                     updatedDate: dateTimeProvider.now(),
+                    lastLoginDate: dateTimeProvider.now(),
                 },
                 create: {
                     googleId: request.googleId,
@@ -34,8 +43,33 @@ export class AddOrUpdateGoogleUserCommandHandler
                     name: request.name,
                     createdDate: dateTimeProvider.now(),
                     updatedDate: dateTimeProvider.now(),
+                    lastLoginDate: dateTimeProvider.now(),
                 },
             });
+
+            // Check if user already has a watchlist
+            const existingWatchlist = await prisma.lists.findFirst({
+                where: {
+                    userId: user.id,
+                    name: 'Watchlist'
+                }
+            });
+
+            if (!existingWatchlist)
+            {
+                // Create watchlist only if it doesn't exist
+                await prisma.lists.create({
+                    data: {
+                        userId: user.id,
+                        name: 'Watchlist',
+                        description: 'My watchlist',
+                        slug: await listHelper.generateUniqueSlug(user.name, 'watchlist'),
+                        privacyType: Number(ListPrivacyType.Private),
+                        createdDate: dateTimeProvider.now(),
+                        updatedDate: dateTimeProvider.now(),
+                    }
+                });
+            }
 
             return {
                 success: true,

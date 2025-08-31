@@ -1,0 +1,213 @@
+@use "../_variables" as *;
+@use "sass:color";
+
+.back-to-lists-button
+{
+    position: absolute;
+    top: 13px;
+    left: 15px;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.lists-container
+{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 400px));
+    width: 100%;
+    max-width: 1400px;
+    gap: clamp(20px, 4vw, 40px);
+    padding: clamp(10px, 3vw, 10px);
+    margin: 30px auto 0;
+    justify-content: center;
+    align-items: start;
+
+    .loading-placeholder
+    {
+        height: 600px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $primary;
+        grid-column: 1 / -1;
+    }
+
+    .list-item
+    {
+        display: flex;
+        flex-direction: row;
+        padding: 12px 16px;
+        border-radius: 8px;
+        gap: 80px;
+        max-width: 400px;
+        transition: background 0.25s ease-in-out;
+        flex: 0 0 auto;
+
+        .loader
+        {
+            left: 60px;
+            top: 30%;
+        }
+
+        .list-details
+        {
+            display: flex;
+            margin-left: -30px;
+            flex-direction: column;
+
+            &.loading-list-details
+            {
+                margin-left: 0px;
+                min-width: 180px;
+            }
+
+            .list-name
+            {
+                font-size: 18px;
+                font-weight: bold;
+                word-wrap: break-word;
+                overflow-wrap: anywhere;
+                word-break: break-word;
+                hyphens: auto;
+            }
+
+            .list-description
+            {
+                font-size: 14px;
+            }
+
+            .list-privacy
+            {
+                font-size: 12px;
+                color: color.adjust($font-color, $lightness: -35%);
+            }
+        }
+
+        .films-preview
+        {
+            display: grid;
+            grid-template-columns: repeat(5, 35px);
+            width: fit-content;
+
+            &.empty
+            {
+                .films-preview-item
+                {
+                    background: $primary;
+                    box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 4px;
+                }
+            }
+
+            .films-preview-item
+            {
+                position: relative;
+                width: 100px;
+                height: 150px;
+                overflow: hidden;
+                border-radius: 4px;
+
+                grid-row: 1;
+
+                &:nth-child(1)
+                {
+                    grid-column: 1;
+                    z-index: 5;
+                }
+
+                &:nth-child(2)
+                {
+                    grid-column: 2;
+                    z-index: 4;
+                }
+
+                &:nth-child(3)
+                {
+                    grid-column: 3;
+                    z-index: 3;
+                }
+
+                &:nth-child(4)
+                {
+                    grid-column: 4;
+                    z-index: 2;
+                }
+
+                &:nth-child(5)
+                {
+                    grid-column: 5;
+                    z-index: 1;
+                }
+
+                .fa-circle-plus
+                {
+                    font-size: 45px;
+                    margin: 0;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) scale(1);
+                    transition: color 0.25s ease-in-out, transform 0.25s ease-in-out;
+                }
+
+                img
+                {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+        }
+
+        &:hover
+        {
+            background: $primary;
+            cursor: pointer;
+            transition: background 0.25s ease-in-out;
+
+            .films-preview-item
+            {
+                .fa-circle-plus
+                {
+                    color: color.adjust($font-color, $lightness: -20%);
+                    transform: translate(-50%, -50%) scale(1.15);
+                    transition: color 0.25s ease-in-out, transform 0.25s ease-in-out;
+                }
+            }
+        }
+    }
+
+    .list-item.loading-list-item
+    {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .loading-preview,
+    .loading-bar
+    {
+        background: $primary;
+        border-radius: 4px;
+        min-height: 24px;
+    }
+
+    .loading-preview
+    {
+        width: 100%;
+        height: 80px;
+        margin-bottom: 8px;
+    }
+
+    .loading-bar
+    {
+        width: 80%;
+        height: 18px;
+        margin: 6px 0;
+
+        &.list-description
+        {
+            height: 108px;
+            width: 100%;
+        }
+    }
+}

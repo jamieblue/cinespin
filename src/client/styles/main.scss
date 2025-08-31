@@ -10,6 +10,8 @@
 @use "components/metacritic";
 @use "components/modal";
 @use "components/googlelogin";
+@use "components/lists";
+@use "components/forms";
 
 body
 {
@@ -47,7 +49,7 @@ button
 
 .fa-thumbs-down
 {
-    color: #ff4d4d;
+    color: $red;
 }
 
 .fa-fire
@@ -140,7 +142,7 @@ button
 @media only screen and (max-width: 600px)
 {}
 
-@keyframes slideIn
+@keyframes fadeIn
 {
     from
     {
@@ -150,6 +152,44 @@ button
     to
     {
         opacity: 1 !important;
+    }
+}
+
+.fade-in
+{
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeOut
+{
+    from
+    {
+        opacity: 1;
+    }
+
+    to
+    {
+        opacity: 0;
+    }
+}
+
+.fade-out
+{
+    animation: fadeOut 0.25s ease-out forwards;
+}
+
+@keyframes slideIn
+{
+    from
+    {
+        margin-top: 20px;
+        opacity: 0;
+    }
+
+    to
+    {
+        opacity: 1 !important;
+        margin-top: 0px;
     }
 }
 
@@ -163,10 +203,12 @@ button
     from
     {
         opacity: 1;
+        margin-top: 0px;
     }
 
     to
     {
+        margin-top: -20px;
         opacity: 0;
     }
 }
@@ -192,4 +234,12 @@ button
 .pulsate
 {
     animation: pulsate 1.2s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .pulsate
+    {
+        animation: pulsate 3.5s ease-in-out infinite alternate;
+    }
 }

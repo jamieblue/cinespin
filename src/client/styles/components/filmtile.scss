@@ -8,8 +8,8 @@
     align-items: center;
     justify-items: center;
     border-radius: 8px;
-    width: 180px;
-    height: 225px;
+    width: 150px;
+    height: 200px;
     flex: 0 0 auto;
     transition: 0.2s ease-in-out;
     color: white;
@@ -30,8 +30,8 @@
     .image-wrapper
     {
         position: relative;
-        width: 150px;
-        height: 225px;
+        width: 125px;
+        height: 200px;
 
         .film-tile-img
         {
@@ -69,7 +69,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1;
         }
     }
 
@@ -91,6 +90,33 @@
         text-align: center;
         font-weight: bold;
         transition: opacity 0.25s ease-in-out;
+        z-index: 1; // ✅ Default z-index
+    }
+
+    .film-tile-action
+    {
+        position: absolute;
+        opacity: 0;
+        top: 5px;
+        right: 21px;
+        background: $primary;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 8px;
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        transition: 0.25s ease-in-out;
+
+        i
+        {
+            vertical-align: middle;
+        }
+
+        &:hover
+        {
+            background: #2f2f33;
+            transition: 0.25s ease-in-out;
+        }
     }
 
     .film-tile-ratings
@@ -149,6 +175,12 @@
         }
 
         .film-tile-ratings
+        {
+            opacity: 1;
+            transition: opacity 0.25s ease-in-out;
+        }
+
+        .film-tile-action
         {
             opacity: 1;
             transition: opacity 0.25s ease-in-out;
