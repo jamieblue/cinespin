@@ -22,7 +22,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.16.3",
-    "preact": "^10.26.9"
+    "preact": "^10.26.9",
+    "preact-router": "^4.1.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
@@ -38,6 +39,7 @@
     "gulp": "^5.0.1",
     "gulp-esbuild": "^0.14.0",
     "gulp-sass": "^6.0.1",
+    "gulp-size": "^5.0.0",
     "gulp-typescript": "^6.0.0-alpha.1",
     "nodemon": "^3.1.10",
     "prisma": "^6.12.0",

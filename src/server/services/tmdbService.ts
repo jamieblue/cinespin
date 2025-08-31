@@ -7,6 +7,8 @@ import * as constants from "../../shared/constants/tmdb";
 import { GetGenresByIDsQueryHandler } from "../cqrs/genres/queries/getGenresByIDsQuery";
 import { take, orderBy, chunk } from "lodash";
 import Bottleneck from "bottleneck";
+import { Result } from "../../shared/models/api/Result";
+import { GetFilmResponse, GetFilmsRequest, GetFilmsResponse } from "../../shared/models/films/TmdbApiRequests";
 
 dotenv.config();
 const TMDB_API = constants.TMDB_API_BASE_URL;
@@ -45,7 +47,7 @@ export async function getRandomFilm(
     rating: number | null,
     voteCount: number | null,
     aboveThreshold: boolean | null
-): Promise<Film>
+): Promise<Result<GetFilmResponse>>
 {
     let voteAverageKey = "vote_average.gte";
     if (aboveThreshold != null && !aboveThreshold)
@@ -82,28 +84,33 @@ export async function getRandomFilm(
     });
 
     return {
-        tmdb_id: randomMovie.id,
-        title: randomMovie.title,
-        overview: randomMovie.overview,
-        poster_path: randomMovie.poster_path,
-        release_date: new Date(randomMovie.release_date).getFullYear(),
-        vote_count: numberFormatter.formatNumber(randomMovie.vote_count),
-        vote_average: randomMovie.vote_average,
-        imdb_id: imdbID,
-        imdb_rating: imdbInfo.imdbRating,
-        imdb_vote_count: imdbInfo.imdbVoteCount,
-        metacritic_url: imdbInfo.metacritic_url,
-        metacritic_rating: imdbInfo.metacriticRating,
-        metacritic_vote_count: imdbInfo.metacriticVoteCount,
-        genres: getGenresResult.success ? getGenresResult.data.genres : [],
+        success: true,
+        data: {
+            film: {
+                tmdb_id: randomMovie.id,
+                title: randomMovie.title,
+                overview: randomMovie.overview,
+                poster_path: randomMovie.poster_path,
+                release_year: new Date(randomMovie.release_date).getFullYear(),
+                tmdb_vote_count: numberFormatter.formatNumber(randomMovie.vote_count),
+                tmdb_rating: randomMovie.vote_average,
+                imdb_id: imdbID,
+                imdb_rating: imdbInfo.imdbRating,
+                imdb_vote_count: imdbInfo.imdbVoteCount,
+                metacritic_url: imdbInfo.metacritic_url,
+                metacritic_rating: imdbInfo.metacriticRating,
+                metacritic_vote_count: imdbInfo.metacriticVoteCount,
+                genres: getGenresResult.success ? getGenresResult.data.genres : [],
+            }
+        }
     };
 }
 
 
-export async function getPopularFilms(): Promise<Film[]>
+export async function getPopularFilms(): Promise<Result<GetFilmsResponse>>
 {
     const baseParams = {
-        sort_by: "vote_average.desc",
+        sort_by: "tmdb_rating.desc",
         include_adult: false,
         include_video: false,
         page: 1,
@@ -113,7 +120,7 @@ export async function getPopularFilms(): Promise<Film[]>
         params: baseParams,
     });
 
-    const allFilms = take(orderBy(firstPage.data.results, ["popularity"], ["desc"]), 14);
+    const allFilms = take(orderBy(firstPage.data.results, ["popularity"], ["desc"]), 20);
 
     // 1. Map to IMDb batch request format
     const imdbRequests: imdbService.ImdbBatchFilmRequest[] = await Promise.all(
@@ -134,37 +141,40 @@ export async function getPopularFilms(): Promise<Film[]>
     // 4. Flatten the results into a single array
     const allImdbRatings: Partial<Film>[] = allRatingsChunked.flat();
 
+    const films = await Promise.all(allFilms.map(async (film: TmdbFilm): Promise<Film> =>
+    {
+        const genreResult = await new GetGenresByIDsQueryHandler().handle({
+            genreIds: film.genre_ids,
+        });
+
+        const imdbInfo = allImdbRatings.find((r) => r.tmdb_id === film.id);
+
+        return {
+            tmdb_id: film.id,
+            title: film.title,
+            overview: film.overview,
+            poster_path: film.poster_path,
+            release_year: new Date(film.release_date).getFullYear(),
+            tmdb_vote_count: numberFormatter.formatNumber(film.vote_count),
+            tmdb_rating: film.vote_average,
+            imdb_id: imdbInfo?.imdb_id,
+            imdb_rating: imdbInfo?.imdb_rating ?? 0,
+            imdb_vote_count: imdbInfo?.imdb_vote_count ?? "0",
+            metacritic_url: imdbInfo?.metacritic_url,
+            metacritic_rating: imdbInfo?.metacritic_rating ?? 0,
+            metacritic_vote_count: imdbInfo?.metacritic_vote_count ?? "0",
+            genres: genreResult.success ? genreResult.data.genres : [],
+        };
+    }));
+
     // 5. Build final Film array
-    return await Promise.all(
-        allFilms.map(async (film: TmdbFilm): Promise<Film> =>
-        {
-            const genreResult = await new GetGenresByIDsQueryHandler().handle({
-                genreIds: film.genre_ids,
-            });
-
-            const imdbInfo = allImdbRatings.find((r) => r.tmdb_id === film.id);
-
-            return {
-                tmdb_id: film.id,
-                title: film.title,
-                overview: film.overview,
-                poster_path: film.poster_path,
-                release_date: new Date(film.release_date).getFullYear(),
-                vote_count: numberFormatter.formatNumber(film.vote_count),
-                vote_average: film.vote_average,
-                imdb_id: imdbInfo?.imdb_id,
-                imdb_rating: imdbInfo?.imdb_rating ?? 0,
-                imdb_vote_count: imdbInfo?.imdb_vote_count ?? "0",
-                metacritic_url: imdbInfo?.metacritic_url,
-                metacritic_rating: imdbInfo?.metacritic_rating ?? 0,
-                metacritic_vote_count: imdbInfo?.metacritic_vote_count ?? "0",
-                genres: genreResult.success ? genreResult.data.genres : [],
-            };
-        })
-    );
+    return {
+        success: true,
+        data: { films }
+    }
 }
 
-export async function getUpcomingFilms(): Promise<Film[]>
+export async function getUpcomingFilms(): Promise<Result<GetFilmsResponse>>
 {
     const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
 
@@ -180,10 +190,9 @@ export async function getUpcomingFilms(): Promise<Film[]>
         params: baseParams,
     });
 
-    const allFilms: TmdbFilm[] = take(firstPage.data.results, 14);
+    const allFilms: TmdbFilm[] = take(firstPage.data.results, 20);
 
-    // Build final Film array
-    return await Promise.all(
+    const films = await Promise.all(
         allFilms.map(async (film: TmdbFilm): Promise<Film> =>
         {
             const genreResult = await new GetGenresByIDsQueryHandler().handle({
@@ -195,9 +204,9 @@ export async function getUpcomingFilms(): Promise<Film[]>
                 title: film.title,
                 overview: film.overview,
                 poster_path: film.poster_path,
-                release_date: new Date(film.release_date).getFullYear(),
-                vote_count: numberFormatter.formatNumber(film.vote_count),
-                vote_average: film.vote_average,
+                release_year: new Date(film.release_date).getFullYear(),
+                tmdb_vote_count: numberFormatter.formatNumber(film.vote_count),
+                tmdb_rating: film.vote_average,
                 imdb_rating: 0,
                 imdb_vote_count: "0",
                 metacritic_rating: 0,
@@ -206,21 +215,27 @@ export async function getUpcomingFilms(): Promise<Film[]>
             };
         })
     );
+
+    // Build final Film array
+    return {
+        success: true,
+        data: { films }
+    };
 }
 
-export async function search(searchTerm: string): Promise<Film[]>
+export async function search(request: GetFilmsRequest): Promise<Result<GetFilmsResponse>>
 {
     const baseParams = {
         include_adult: false,
         page: 1,
-        query: searchTerm,
+        query: request.query,
     };
 
     const firstPage = await get("/search/movie", {
         params: baseParams,
     });
 
-    const allFilms = take(firstPage.data.results, 14) as TmdbFilm[];
+    const allFilms = take(firstPage.data.results, 20) as TmdbFilm[];
 
     const imdbRequests: imdbService.ImdbBatchFilmRequest[] = await Promise.all(
         allFilms.map(async (film: TmdbFilm): Promise<imdbService.ImdbBatchFilmRequest> => ({
@@ -255,9 +270,9 @@ export async function search(searchTerm: string): Promise<Film[]>
                     title: film.title,
                     overview: film.overview,
                     poster_path: film.poster_path,
-                    release_date: new Date(film.release_date).getFullYear(),
-                    vote_count: numberFormatter.formatNumber(film.vote_count),
-                    vote_average: film.vote_average,
+                    release_year: new Date(film.release_date).getFullYear(),
+                    tmdb_vote_count: numberFormatter.formatNumber(film.vote_count),
+                    tmdb_rating: film.vote_average,
                     imdb_id: imdbInfo?.imdb_id,
                     imdb_rating: imdbInfo?.imdb_rating ?? 0,
                     imdb_vote_count: imdbInfo?.imdb_vote_count ?? "0",
@@ -269,12 +284,17 @@ export async function search(searchTerm: string): Promise<Film[]>
             })
     );
 
-    return orderBy(
-        films,
-        [film => Number(numberFormatter.parseFormattedNumber(film.imdb_vote_count)),
-            'imdb_rating', 'vote_count', 'vote_average'],
-        ['desc', 'desc', 'desc']
-    );
+    return {
+        success: true,
+        data: {
+            films: orderBy(
+                films,
+                [film => Number(numberFormatter.parseFormattedNumber(film.imdb_vote_count)),
+                    'imdb_rating', 'vote_count', 'vote_average'],
+                ['desc', 'desc', 'desc']
+            )
+        }
+    };
 }
 
 async function getImdbID(id: number): Promise<string>

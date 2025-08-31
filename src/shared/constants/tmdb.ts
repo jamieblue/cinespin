@@ -5,6 +5,6 @@ export const TMDB_IMAGE_SIZES = {
     "500": "w500",
     "300": "w300",
     "200": "w200",
-    "100": "w100",
+    "154": "w154",
 };
 export const TMDB_FILM_BASE_URL = "https://www.themoviedb.org/movie";

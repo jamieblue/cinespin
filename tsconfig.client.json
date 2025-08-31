@@ -13,5 +13,5 @@
 		"src/shared/models",
 		"src/shared/util",
 		"src/shared/constants"
-	]
+, "src/shared/services/listService.ts"	]
 }

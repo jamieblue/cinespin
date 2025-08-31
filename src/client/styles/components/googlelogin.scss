@@ -1,11 +1,19 @@
-.google-login-btn
+.google-login
 {
-    img
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+
+    .google-login-btn
     {
-        width: 18px;
-        height: 18px;
-        margin-bottom: 2px;
-        vertical-align: middle;
-        display: inline-block;
+        img
+        {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 2px;
+            vertical-align: middle;
+            display: inline-block;
+        }
     }
 }

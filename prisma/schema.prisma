@@ -5,28 +5,93 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Genres {
-  id   Int    @id
-  name String @unique
-  createdDate DateTime
+    id          Int    @id
+    name        String @unique
+    createdDate DateTime
+
+    films       FilmGenres[]
 }
 
 model Users {
-  id          Int      @id @default(autoincrement())
-  googleId    String   @unique
-  email       String   @unique
-  name        String
-  createdDate   DateTime
-  updatedDate   DateTime
-  
-  // Future relations for user lists, etc.
-  // lists       UserList[]
+    id              Int      @id @default(autoincrement())
+    googleId        String   @unique
+    email           String   @unique
+    name            String
+    lastLoginDate   DateTime?
+    createdDate     DateTime
+    updatedDate     DateTime
+
+    lists           Lists[]
+}
+
+model Films {
+    id                  Int      @id @default(autoincrement())
+    title               String   
+    tmdbId              Int?      @unique
+    imdbId              String?   @unique
+    overview            String?
+    releaseYear         Int
+    tmdbRating          Decimal?
+    tmdbVoteCount       String?
+    imdbRating          Decimal?
+    imdbVoteCount       String?
+    metacriticRating    Int?
+    metacriticVoteCount String?
+
+    posterPath          String?
+    createdDate         DateTime
+    updatedDate         DateTime
+
+    genres              FilmGenres[]
+    lists               FilmLists[]
+}
+
+model FilmGenres {
+    id      Int @id @default(autoincrement())
+    filmId  Int
+    genreId Int
+    createdDate         DateTime
+    updatedDate         DateTime
+    
+    film    Films  @relation(fields: [filmId], references: [id], onDelete: Cascade)
+    genre   Genres @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+    @@unique([filmId, genreId]) // Prevent duplicate entries
+}
+
+model Lists {
+    id          Int @id @default(autoincrement())
+    name        String
+    description String
+    privacyType Int
+    slug        String @unique
+    createdDate     DateTime
+    updatedDate     DateTime
+
+    userId      Int
+    user        Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    films       FilmLists[]
+}
+
+model FilmLists {
+    id      Int @id @default(autoincrement())
+    listId  Int
+    filmId  Int
+    createdDate         DateTime
+    updatedDate         DateTime
+
+    list    Lists  @relation(fields: [listId], references: [id], onDelete: Cascade)
+    film    Films @relation(fields: [filmId], references: [id], onDelete: Cascade)
+
+    @@unique([listId, filmId]) // Prevent duplicate entries
 }

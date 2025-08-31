@@ -1,7 +1,8 @@
 @use "../_variables" as *;
 
 body,
-html
+html,
+.modal-content
 {
     scrollbar-color: $primary $secondary;
     scrollbar-width: thin;

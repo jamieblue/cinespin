@@ -1,9 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import path from 'path';
 import tmdbRoutes from './routes/tmdb';
-import imdbRoutes from './routes/imdb';
 import googleAuthRoutes from './routes/googleAuth';
+import lists from './routes/lists';
 import passport from './auth/google/googleOAuth';
 import * as dotenv from 'dotenv';
 
@@ -13,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Your frontend URL
+    origin: process.env.CLIENT_URL || 'http://localhost:3000', // configurable for prod
     credentials: true
 }));
 app.use(express.json());
@@ -24,7 +25,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Set to true in production with HTTPS
+        secure: process.env.NODE_ENV === 'production', // true in production
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
@@ -33,13 +34,20 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Static public files (like index.html)
-app.use(express.static('dist/public'));
+// Static files
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
 
 // API routes
 app.use('/api/tmdb', tmdbRoutes);
-app.use('/api/imdb', imdbRoutes);
 app.use('/auth', googleAuthRoutes);
+app.use('/lists', lists);
+
+// 👇 Catch-all: send index.html for SPA routes
+app.get(/.*/, (req, res) =>
+{
+    res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 app.listen(PORT, () =>
 {

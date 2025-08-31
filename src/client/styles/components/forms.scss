@@ -1,0 +1,143 @@
+@use "../_variables" as *;
+
+.form-container
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+    &.create-list-form
+    {
+        .film-tile
+        {
+            position: relative;
+            top: -85px;
+            left: 50px;
+
+            .title
+            {
+                display: none;
+            }
+
+            .add-to-list
+            {
+                display: none;
+            }
+        }
+    }
+
+    .loading-placeholder
+    {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        display: flex;
+        margin-left: 10%;
+        margin-right: 10%;
+        align-items: center;
+        justify-content: center;
+        background: $primary;
+    }
+
+    form
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        font-weight: bold;
+        margin-top: 15px;
+        width: 100%;
+
+        .form-input
+        {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 80%;
+
+            .error
+            {
+                display: flex;
+                color: $red;
+                font-size: 12px;
+                margin-top: 5px;
+                align-self: flex-start;
+            }
+
+            label
+            {
+                display: flex;
+                align-self: flex-start;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            textarea
+            {
+                margin-top: 5px;
+                font-size: 14px;
+                padding: 8px;
+                letter-spacing: 1.5px;
+                box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+            }
+
+            input[type="text"],
+            select
+            {
+                width: 100%;
+                height: 25px;
+                background: $primary;
+                border-radius: 5px;
+                border-style: none;
+                color: white;
+
+                &:focus
+                {
+                    outline: none;
+                }
+            }
+
+            textarea
+            {
+                width: 100%;
+                height: 80px;
+                padding: 5px;
+                background: $primary;
+                border-radius: 5px;
+                border-style: none;
+                color: white;
+                resize: none;
+
+                &:focus
+                {
+                    outline: none;
+                }
+            }
+
+            select
+            {
+                cursor: pointer;
+                height: 40px;
+                font-size: 16px;
+                padding: 5px;
+                background: $primary;
+                border-radius: 5px;
+                border-style: none;
+                color: white;
+                box-sizing: border-box;
+                line-height: 1.5;
+                width: 101%;
+
+                option
+                {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
