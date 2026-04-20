@@ -6,7 +6,7 @@ import { Film } from "../../shared/models/films/Film";
 
 const SelectedFilmContext = createContext<[Film | null, (film: Film | null) => void]>([null, () => { }]);
 
-export function SelectedFilmProvider({ children })
+export function SelectedFilmProvider({ children }: { children: preact.ComponentChildren })
 {
     const state = useState<Film | null>(null);
     return (

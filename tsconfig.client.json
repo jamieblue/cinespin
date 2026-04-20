@@ -5,7 +5,7 @@
 		"outDir": "dist/public/js",
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact",
-        "incremental": false,
+		"incremental": false,
 		"paths": {
 			"shared/*": ["./src/shared/*"]
 		}
