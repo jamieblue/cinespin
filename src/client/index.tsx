@@ -62,8 +62,5 @@ function InnerApp()
 // Single render call
 document.addEventListener("DOMContentLoaded", () =>
 {
-    render(
-            <App />,
-        document.body
-    );
+    render(<App />, document.getElementById("app")!);
 });
