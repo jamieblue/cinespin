@@ -16,7 +16,7 @@ export function AddToUserList({ filmProp }: Props)
     const { user } = useAuth();
     const [lists, setLists] = useState<FilmList[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedFilm,] = useState<Film | null>(filmProp);
+    const [selectedFilm,] = useState<Film | undefined>(filmProp);
 
     useEffect(() =>
     {

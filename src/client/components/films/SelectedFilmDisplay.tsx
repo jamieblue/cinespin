@@ -25,7 +25,6 @@ import { METACRITIC_FILM_BASE_URL } from "../../../shared/constants/metacritic";
 import { BackgroundTrailer } from "./BackgroundTrailer";
 import { useUserSettings } from "../../../client/contexts/UserSettingsContext";
 import { useWindowSize } from "../../hooks/UseWindowsize";
-import { useConnectionSpeed } from "../../hooks/UseConnectionSpeed";
 import { RandomFilmRatingThreshold } from "../../../shared/models/films/RandomFilmRatingThreshold";
 import { FilmGridLoadingPlaceholder } from "./FilmGridLoadingPlaceHolder";
 //#endregion
@@ -61,7 +60,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
     {
         const next = selectedFilm;
 
-        if (!selectedFilm)
+        if (!next)
         {
             setCurrentFilm(null);
             return;
@@ -91,7 +90,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
 
         try
         {
-            let next: Film | undefined;
+            let next: Film | null = null;
             switch (filmType)
             {
                 case RandomFilmType.Good:
@@ -118,6 +117,11 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
                         if (defaultResult.success) next = defaultResult.data.film;
                         break;
                     }
+            }
+
+            if (!next)
+            {
+                return;
             }
 
             setShowRecommendations(true);
@@ -151,7 +155,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
             throw new Error('No current film to fetch recommendations for');
         }
 
-        const result = await filmService.getFilmsByDirector(currentFilm.directors.map((director) => director.id), signal);
+        const result = await filmService.getFilmsByDirector((currentFilm.directors ?? []).map((director) => director.id), signal);
         if (result.success) return result.data.films.filter(f => f.tmdb_id !== currentFilm.tmdb_id);
 
         return [];
@@ -159,7 +163,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
 
     const handleAddToListClick = () =>
     {
-        showModal(<AddToUserList filmProp={currentFilm} />, "Add to List", ModalSize.Large, true);
+        showModal(<AddToUserList filmProp={currentFilm ?? undefined} />, "Add to List", ModalSize.Large, true);
     };
     //#endregion
 
@@ -300,7 +304,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
                             )}
                             <div className="credits">
                                 <ul>
-                                    <li><strong>Director(s): </strong>{currentFilm.directors.map((director) => director.name)?.join(", ")}</li>
+                                    <li><strong>Director(s): </strong>{(currentFilm.directors ?? []).map((director) => director.name).join(", ")}</li>
                                     <li><strong>Top Cast: </strong>{currentFilm.cast?.map((member) => member.name).join(", ")}</li>
                                 </ul>
                             </div>
@@ -408,7 +412,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
 
                     {showRecommendations && currentFilm && (
                         <FilmGrid
-                            title={`More films by ${ currentFilm.directors.map((d) => d.name).join(", ") }`}
+                            title={`More films by ${ (currentFilm.directors ?? []).map((d) => d.name).join(", ") }`}
                             fetchFilms={fetchFilmsByDirector}
                         />
                     )}
