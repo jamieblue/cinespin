@@ -1,0 +1,247 @@
+@use "../_variables" as *;
+@use "sass:color";
+
+.bottom-sheet-root
+{
+    position: fixed;
+    inset: 0;
+    z-index: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .25s ease;
+
+    &.open
+    {
+        pointer-events: auto;
+        opacity: 1;
+    }
+}
+
+.bottom-sheet-backdrop
+{
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    backdrop-filter: blur(2px);
+}
+
+.bottom-sheet-panel
+{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--sheet-height, 55%);
+    background: #121214;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, .5);
+    display: flex;
+    flex-direction: column;
+
+    /* Use variable for vertical translation */
+    --sheet-y: 100%;
+    transform: translateY(var(--sheet-y));
+    transition: transform .32s cubic-bezier(.33, .9, .42, 1);
+    will-change: transform;
+    touch-action: none;
+    user-select: none;
+}
+
+.bottom-sheet-root.open .bottom-sheet-panel
+{
+    --sheet-y: 0%;
+}
+
+/* While dragging: no transition */
+.bottom-sheet-panel.dragging
+{
+    transition: none;
+}
+
+.bottom-sheet-grabber
+{
+    width: 46px;
+    height: 5px;
+    border-radius: 3px;
+    background: #2e2e33;
+    margin: 10px auto 12px;
+}
+
+.bottom-sheet-body
+{
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px 28px;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Film sheet content (unchanged) */
+.film-sheet-content
+{
+    .sheet-large-actions
+    {
+        display: flex;
+        flex-direction: column;
+        margin-top: 6px;
+        gap: 8px;
+
+        .sheet-btn
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba($primary, 0.8);
+            border-radius: 3px;
+            border: none;
+            font-size: 18px;
+            color: white;
+            width: 100%;
+            height: 65px;
+            padding: 5px 5px;
+
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.25s ease-in-out;
+
+            &:hover
+            {
+                background: #2f2f33;
+                transition: 0.25s ease-in-out;
+            }
+
+            span
+            {
+                display: block;
+                margin-left: 10px;
+                font-size: 18px;
+                text-align: center;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+        }
+    }
+
+    .film-sheet-header-row
+    {
+        display: flex;
+        gap: 16px;
+    }
+
+    .film-sheet-poster img
+    {
+        width: 110px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .film-sheet-meta
+    {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        h3
+        {
+            margin: 0 0 6px;
+            font-size: 18px;
+        }
+
+        .ratings-row
+        {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+
+            .rating
+            {
+                background: #1f1f24;
+                padding: 4px 8px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+
+                &.mc.mc-green
+                {
+                    background: #184f24;
+                }
+
+                &.mc.mc-yellow
+                {
+                    background: #5a4b14;
+                }
+
+                &.mc.mc-red
+                {
+                    background: #5a1a1a;
+                }
+            }
+        }
+
+        .sheet-actions
+        {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+
+            .sheet-btn
+            {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                background: rgba($primary, 0.8);
+                border-radius: 3px;
+                border: none;
+                font-size: 18px;
+                color: white;
+                width: 45%;
+                height: 65px;
+                padding: 5px 5px;
+
+                cursor: pointer;
+                font-weight: bold;
+                transition: 0.25s ease-in-out;
+
+                &:hover
+                {
+                    background: #2f2f33;
+                    transition: 0.25s ease-in-out;
+                }
+
+                span
+                {
+                    display: block;
+                    width: 100%;
+                    margin-top: 4px;
+                    font-size: 10px;
+                    text-align: center;
+                    white-space: normal;
+                    overflow-wrap: anywhere;
+                }
+            }
+        }
+    }
+
+    .overview
+    {
+        margin-top: 14px;
+        line-height: 1.35;
+    }
+}
+
+@media (min-width: 860px)
+{
+    .bottom-sheet-panel
+    {
+        left: 50%;
+        width: 520px;
+        transform: translate(-50%, var(--sheet-y));
+    }
+
+    .bottom-sheet-root.open .bottom-sheet-panel
+    {
+        /* still --sheet-y:0%, transform updates automatically */
+    }
+}

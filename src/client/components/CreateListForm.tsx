@@ -7,8 +7,7 @@ import { listService } from "../../shared/services/listService";
 import { useModal } from "../../client/contexts/ModalContext";
 import { ViewUserLists } from "./ViewUserLists";
 import { ModalSize } from "../../shared/models/modals/ModalSize";
-import { FilmTile } from "./FilmTile";
-import { UserList } from "./UserList";
+import { FilmTile } from "./films/FilmTile";
 import { AddToUserList } from "./AddToUserList";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -49,7 +48,7 @@ export function CreateListForm({ filmProp }: Props)
         let valid = true;
         const newErrors: typeof errors = {};
 
-        if (form.listName.trim().length < 3 || form.listName.trim().length > 25)
+        if (form.listName.trim().length < 3 || form.listName.trim().length > 40)
         {
             newErrors.listName = "List name must be between 3 and 100 characters.";
             valid = false;
@@ -74,7 +73,6 @@ export function CreateListForm({ filmProp }: Props)
             const newList = await listService.getList({ listId });
             if (newList.success)
             {
-                showModal(<UserList list={newList.data.list} />, "My lists", ModalSize.Large);
             } else if (newList.success === false)
             {
                 console.error(newList.error);
@@ -118,7 +116,7 @@ export function CreateListForm({ filmProp }: Props)
                     <>
                         {film && (
                             <div className="">
-                                <FilmTile showOptions={false} film={film} />
+                                <FilmTile film={film} />
                             </div>
                         )}
                         <form>

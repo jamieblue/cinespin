@@ -1,8 +1,10 @@
+import { Credit } from "./Credit";
 import { Genre } from "./Genre";
+import { WatchProvider } from "./WatchProvider";
 
 export type Film = {
     id?: number;
-    tmdb_id?: number;
+    tmdb_id: number;
     title: string;
     overview: string;
     poster_path: string;
@@ -15,5 +17,15 @@ export type Film = {
     metacritic_url?: string;
     metacritic_rating?: number;
     metacritic_vote_count?: string;
+    popularity?: number;
     genres: Genre[];
+    backdrop_path?: string;
+    directors?: Credit[];
+    cast?: Credit[];
+    runtime?: number;
+    tagline?: string;
+    watch_providers?: WatchProvider[];
+    youtube_key?: string;
+    liked?: boolean;
+    disliked?: boolean;
 };

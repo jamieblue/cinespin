@@ -4,6 +4,8 @@ import { createContext } from "preact";
 import { useContext, useState, useEffect } from "preact/hooks";
 import { authService } from "../../shared/util/authService";
 import { User } from "../../shared/models/users/user";
+import { listService } from "../../shared/services/listService";
+import { FilmList } from "shared/models/lists/FilmList";
 
 interface AuthContextType
 {
@@ -31,6 +33,20 @@ export function AuthProvider({ children }: { children: any })
         {
             const currentUser = await authService.getCurrentUser();
             setUser(currentUser);
+
+            // if (currentUser && currentUser.id)
+            // {
+            //     const lists = await listService.getListsForUser(currentUser.id, currentUser.id);
+            //     console.log(lists);
+            //     if (lists.success && lists.data.lists)
+            //     {
+            //         setUser({ ...currentUser, lists: lists.data.lists });
+            //     }
+            //     else if (lists.success === false)
+            //     {
+            //         console.error('Failed to fetch user lists:', lists.error);
+            //     }
+            // }
         } catch (error)
         {
             setUser(null);

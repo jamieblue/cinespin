@@ -11,11 +11,9 @@ export interface CreateListRequest
     film?: Film;
 }
 
-export interface AddFilmToListRequest
-{
-    listId: number;
-    film: Film;
-}
+export type AddFilmToListRequest = 
+    | { listId: number; film: Film }
+    | { listName: string; film: Film, userId: number };
 
 export interface AddFilmToListResponse
 {
@@ -36,6 +34,16 @@ export interface GetMyListsResponse
 export interface GetListRequest
 {
     listId: number;
+}
+
+export interface CheckFilmInListsQueryRequest {
+    userId: number;
+    tmdbIds: number[];
+}
+
+export interface CheckFilmInListsQueryResponse {
+    liked: number[];
+    disliked: number[];
 }
 
 export interface GetListResponse

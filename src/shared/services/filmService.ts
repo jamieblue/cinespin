@@ -1,11 +1,11 @@
 import { Result } from "../models/api/Result";
 import { apiClient } from "./apiClient";
-import { GetFilmResponse, GetFilmsRequest, GetFilmsResponse } from "../../shared/models/films/TmdbApiRequests";
+import { GetRandomFilmRequest, GetFilmResponse, GetFilmsRequest, GetFilmsResponse, GetImdbRatingsBatchResponse } from "../../shared/models/films/TmdbApiRequests";
+import { Film } from "../models/films/Film";
 
 class FilmService
 {
     private static instance: FilmService;
-    private readonly apiBaseUrl: string;
 
     private constructor() { }
 
@@ -18,35 +18,55 @@ class FilmService
         return FilmService.instance;
     }
 
-    async getRandomFilm(): Promise<Result<GetFilmResponse>>
+    async getRandomFilm(request?: GetRandomFilmRequest, signal?: AbortSignal): Promise<Result<GetFilmResponse>>
     {
-        return await apiClient.get<GetFilmResponse>('api/tmdb/random-film');
+        if (!request)
+        {
+            return await apiClient.get<GetFilmResponse>('api/tmdb/random-film', { signal });
+        }
+
+        return await apiClient.get<GetFilmResponse>('api/tmdb/random-film', { params: request, signal });
     }
 
-    async getRandomGoodFilm(): Promise<Result<GetFilmResponse>>
+    async getFilmDetails(film: Film, signal?: AbortSignal): Promise<Result<GetFilmResponse>>
     {
-        return await apiClient.get<GetFilmResponse>('api/tmdb/random-good-film');
+        return await apiClient.post<GetFilmResponse>(`api/tmdb/film/`, film, { signal });
     }
 
-    async getRandomBadFilm(): Promise<Result<GetFilmResponse>>
-    {
-        return await apiClient.get<GetFilmResponse>('api/tmdb/random-bad-film');
-    }
-
-    async searchFilms(query: string): Promise<Result<GetFilmsResponse>>
+    async searchFilms(query: string, signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
     {
         const request: GetFilmsRequest = { query: query };
-        return await apiClient.post<GetFilmsResponse>('api/tmdb/search', request);
+        return await apiClient.post<GetFilmsResponse>('api/tmdb/search', request, { signal });
     }
 
-    async getPopularFilms(): Promise<Result<GetFilmsResponse>>
+    async getPopularFilms(signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
     {
-        return await apiClient.get<GetFilmsResponse>('api/tmdb/popular');
+        return await apiClient.get<GetFilmsResponse>('api/tmdb/popular', { signal });
     }
 
-    async getUpcomingFilms(): Promise<Result<GetFilmsResponse>>
+    async getUpcomingFilms(signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
     {
-        return await apiClient.get<GetFilmsResponse>('api/tmdb/upcoming');
+        return await apiClient.get<GetFilmsResponse>('api/tmdb/upcoming', { signal });
+    }
+
+    async getRecommendations(filmId: number, signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
+    {
+        return await apiClient.get<GetFilmsResponse>(`api/tmdb/${ filmId }/recommendations`, { signal });
+    }
+
+    async getFilmsByDirector(directorIds: number[], signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
+    {
+        return await apiClient.post<GetFilmsResponse>(`api/tmdb/films-by-director`, { directorIds }, { signal });
+    }
+
+    async getBestFilms(signal?: AbortSignal): Promise<Result<GetFilmsResponse>>
+    {
+        return await apiClient.post<GetFilmsResponse>(`api/tmdb/best-films`, { signal });
+    }
+
+    async getImdbRatingsBatch(tmdbIds: number[], signal?: AbortSignal): Promise<Result<GetImdbRatingsBatchResponse>>
+    {
+        return await apiClient.post<GetImdbRatingsBatchResponse>('api/tmdb/ratings/batch', { tmdbIds }, { signal });
     }
 }
 

@@ -8,6 +8,7 @@ import { GetListByIDQueryHandler } from "../cqrs/lists/queries/getListByIDQuery"
 import { RemoveFilmFromListCommandHandler } from "../cqrs/lists/commands/removeFilmFromListCommand";
 import { GetListBySlugQueryHandler } from "../cqrs/lists/queries/getListBySlugQueryHandler";
 import { DoesSlugExistQueryHandler } from "../cqrs/lists/queries/doesSlugExistQuery";
+import { CheckFilmInListsQueryHandler } from "../cqrs/lists/queries/checkFilmInListsQuery";
 
 const router = express.Router();
 
@@ -40,6 +41,25 @@ router.post("/create", requireAuth, async (req, res) =>
     }
 });
 
+router.get("/user-lists/:userId", async (req, res) =>
+{
+    try
+    {
+        const userId = parseInt(req.params.userId);
+        const result = await new GetListsForUserQueryHandler().handle({ userId, currentUserId: parseInt(req.query.currentUserId as string) });
+
+        if (!result.success)
+        {
+            return res.status(400).json(result);
+        }
+
+        return res.json(result);
+    } catch (err)
+    {
+        res.status(500).json(serverErrorResponse("Failed to get user lists"));
+    }
+});
+
 router.get("/my-lists", requireAuth, async (req, res) =>
 {
     try
@@ -49,16 +69,16 @@ router.get("/my-lists", requireAuth, async (req, res) =>
             return res.status(401).json(unauthorizedResponse());
         }
 
-        const result = await new GetListsForUserQueryHandler().handle({
-            userId: req.user.id
-        });
+        // const result = await new GetListsForUserQueryHandler().handle({
+        //     userId: req.user.id
+        // });
 
-        if (!result.success)
-        {
-            return res.status(400).json(result);
-        }
+        // if (!result.success)
+        // {
+        //     return res.status(400).json(result);
+        // }
 
-        return res.json(result);
+        // return res.json(result);
     } catch (err)
     {
         res.status(500).json(serverErrorResponse("Failed to get lists"));
@@ -133,6 +153,38 @@ router.get("/does-slug-exist/:slug", async (req, res) =>
     }
 });
 
+router.get("/check-films-in-lists", async (req, res) =>
+{
+    try
+    {
+        const tmdbIdsParam = req.query.tmdbIds as string;
+        const userId = req.user?.id;
+
+        if (!tmdbIdsParam || !userId)
+        {
+            return res.status(400).json({
+                success: false,
+                error: "tmdbIds and userId must be provided"
+            });
+        }
+
+        // Parse comma-separated string into array of integers
+        const tmdbIds = tmdbIdsParam.split(',').map(id => parseInt(id.trim(), 10));
+
+        const result = await new CheckFilmInListsQueryHandler().handle({ tmdbIds, userId });
+
+        if (!result.success)
+        {
+            return res.status(404).json(result);
+        }
+
+        return res.json(result);
+    } catch (err)
+    {
+        res.status(500).json(serverErrorResponse("Failed to check if film is in user's lists"));
+    }
+});
+
 router.put("/add-to-list", requireAuth, async (req, res) =>
 {
     try
@@ -142,10 +194,30 @@ router.put("/add-to-list", requireAuth, async (req, res) =>
             return res.status(401).json(unauthorizedResponse());
         }
 
-        const result = await new AddFilmToListCommandHandler().handle({
-            film: req.body.film,
-            listId: req.body.listId
-        });
+        // Handle both listId and listName cases
+        let result;
+        if (req.body.listId)
+        {
+            result = await new AddFilmToListCommandHandler().handle({
+                film: req.body.film,
+                listId: req.body.listId
+            });
+        }
+        else if (req.body.listName)
+        {
+            result = await new AddFilmToListCommandHandler().handle({
+                film: req.body.film,
+                listName: req.body.listName,
+                userId: req.user.id
+            });
+        }
+        else
+        {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Either listId or listName must be provided" 
+            });
+        }
 
         if (!result.success)
         {

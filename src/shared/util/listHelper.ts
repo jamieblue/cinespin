@@ -4,33 +4,7 @@ import { listService } from "../services/listService"
 
 const prisma = new PrismaClient();
 
-export async function generateUniqueSlug(userName: string, listName: string): Promise<string>
-{
-    const baseSlug = createSlug(userName, listName);
-
-    const existingListResult = await listService.doesSlugExist(baseSlug);
-
-    if (existingListResult.success)
-    {
-        if (!existingListResult.data)
-        {
-            return baseSlug;
-        }
-    }
-
-    let counter = 1;
-    let uniqueSlug = `${ baseSlug }-${ counter }`;
-
-    while (await slugExists(uniqueSlug))
-    {
-        counter++;
-        uniqueSlug = `${ baseSlug }-${ counter }`;
-    }
-
-    return uniqueSlug;
-}
-
-function createSlug(userName: string, listName: string): string
+export async function generateUniqueSlug(userName: string, userId: number, listName: string): Promise<string>
 {
     const cleanUserName = userName.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -42,19 +16,7 @@ function createSlug(userName: string, listName: string): string
         .replace(/\s+/g, '-')
         .trim();
 
-    return `${ cleanUserName }/${ cleanListName }`;
-}
-
-async function slugExists(slug: string): Promise<boolean>
-{
-    const existingListResult = await listService.doesSlugExist(slug);
-
-    if (existingListResult.success)
-    {
-        return existingListResult.data;
-    }
-
-    return false;
+    return `${ cleanUserName }/${ userId }/${ cleanListName }`;
 }
 
 export function getPrivacyInfo(privacy: ListPrivacyType)

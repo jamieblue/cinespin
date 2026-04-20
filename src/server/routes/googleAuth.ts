@@ -4,9 +4,15 @@ import passport from '../auth/google/googleOAuth';
 const router = express.Router();
 
 // Initiate Google OAuth
-router.get('/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+router.get('/google', (req, res, next) =>
+{
+    const redirect = typeof req.query.redirect === "string" ? req.query.redirect : "/";
+    // Pass redirect as state param to Google OAuth
+    passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        state: encodeURIComponent(redirect)
+    })(req, res, next);
+});
 
 // Google OAuth callback
 router.get('/google/callback',
@@ -16,7 +22,9 @@ router.get('/google/callback',
     (req, res) =>
     {
         const clientUrl = process.env.CLIENT_BASE_URL || 'http://localhost:3000';
-        res.redirect(clientUrl);
+        // Google sends back the state param as req.query.state
+        const redirectPath = req.query.state ? decodeURIComponent(req.query.state as string) : '/';
+        res.redirect(clientUrl + redirectPath);
     }
 );
 

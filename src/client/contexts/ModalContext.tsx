@@ -2,7 +2,7 @@
 /** @jsxImportSource preact */
 import { createContext, JSX } from "preact";
 import { useState, useContext, useRef } from "preact/hooks"
-import { scrollLock } from "../../shared/util/scrollLock";
+import { scrollLock } from "../../shared/util/scrollHelper";
 import { ModalSize } from "../../shared/models/modals/ModalSize";
 
 interface ModalContextType

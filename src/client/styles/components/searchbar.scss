@@ -1,23 +1,72 @@
 @use "../_variables" as *;
+@use "sass:color";
 
-.search-bar {
+.search-bar
+{
     color: white;
     border: 1px solid $primary;
-    background: $primary;
-    border-radius: 12px;
-    font-size: 16px;
-    padding: 16px 18px;
-    width: 600px;
-    letter-spacing: 2px;
+    background: rgba($secondary, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 8px 35px 8px 35px; // Equal padding on both sides for icons
+    width: 300px;
+    letter-spacing: 1px;
+    backdrop-filter: blur(3px);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
-.search-bar:focus {
+.search-bar:focus
+{
     outline: none;
 }
 
-@media only screen and (max-width: 600px) {
-    .search-bar {
+.search-bar::placeholder
+{
+    font-weight: bold;
+    font-family: Hanken Grotesk, sans-serif;
+    font-size: 16px;
+}
+
+.search-input-wrapper
+{
+    position: relative;
+    display: inline-block;
+
+    .fa-magnifying-glass
+    {
+        color: gray;
+        position: absolute;
+        left: 12px; // Fixed distance from left edge
+        top: 50%;
+        transform: translateY(-50%); // Center vertically
+        z-index: 10;
+        pointer-events: none; // Prevent clicking on icon
+    }
+
+    .clear-search
+    {
+        color: color.adjust(gray, $lightness: 20%);
+        position: absolute;
+        right: 12px; // Fixed distance from right edge
+        top: 50%;
+        transform: translateY(-50%); // Center vertically
+        z-index: 10;
+        cursor: pointer;
+        transition: color ease-in-out 0.2s;
+    }
+
+    .clear-search:hover
+    {
+        color: gray;
+        transition: color ease-in-out 0.2s;
+    }
+}
+
+@media only screen and (max-width: 600px)
+{
+    .search-bar
+    {
         width: 75vw;
     }
 }

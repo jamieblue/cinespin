@@ -11,13 +11,18 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.API_PORT || 3001;
+
+const allowedOrigins = process.env.CLIENT_ORIGINS?.split(',') || ['http://localhost:3000'];
 
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000', // configurable for prod
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(express.json());
+
+app.set("trust proxy", true);
+app.use(require("./middleware/ipMiddleware").clientRegionMiddleware);
 
 // Session configuration
 app.use(session({
@@ -42,6 +47,8 @@ app.use(express.static(publicPath));
 app.use('/api/tmdb', tmdbRoutes);
 app.use('/auth', googleAuthRoutes);
 app.use('/lists', lists);
+
+app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 // 👇 Catch-all: send index.html for SPA routes
 app.get(/.*/, (req, res) =>

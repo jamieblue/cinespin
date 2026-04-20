@@ -110,3 +110,21 @@
         z-index: 99999;
     }
 }
+
+@media (max-width: 820px)
+{
+    .modal
+    {
+        width: 90vw;
+
+        .modal-title
+        {
+            font-size: 18px;
+        }
+
+        .modal-content
+        {
+            padding: 10px;
+        }
+    }
+}

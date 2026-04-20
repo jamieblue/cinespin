@@ -1,15 +1,14 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
 import { useEffect } from "preact/hooks";
-import { FilmList } from "../../shared/models/lists/FilmList";
-import * as constants from "../../shared/constants/tmdb";
-import { useModal } from "../contexts/ModalContext";
-import { getPrivacyInfo } from "../../shared/util/listHelper";
-import { ModalSize } from "../../shared/models/modals/ModalSize";
-import { CreateListForm } from "./CreateListForm";
-import { Film } from "../../shared/models/films/Film";
-import { listService } from "../../shared/services/listService";
-import { UserList } from "./UserList";
+import { FilmList } from "../../../shared/models/lists/FilmList";
+import * as constants from "../../../shared/constants/tmdb";
+import { useModal } from "../../contexts/ModalContext";
+import { getPrivacyInfo } from "../../../shared/util/listHelper";
+import { ModalSize } from "../../../shared/models/modals/ModalSize";
+import { CreateListForm } from "../CreateListForm";
+import { Film } from "../../../shared/models/films/Film";
+import { useAuth } from "../../../client/contexts/AuthContext";
 
 const TMDB_IMAGE_BASE_URL = constants.TMDB_IMAGE_BASE_URL;
 const TMDB_IMAGE_SIZES = constants.TMDB_IMAGE_SIZES;
@@ -22,50 +21,17 @@ type Props = {
 export function UserListItem({ list, film }: Props)
 {
     const { showModal } = useModal();
+    const { user } = useAuth();
 
     useEffect(() =>
     {
 
     }, []);
 
-    const handleListClick = async () =>
-    {
-        const result = await listService.getList({ listId: list.id });
-
-        if (result.success)
-        {
-            showModal(<UserList list={result.data.list} />, 'View List', ModalSize.Large);
-        }
-        else if (result.success === false)
-        {
-            console.error('Failed to fetch list:', result.error);
-        }
-    };
-
     const handleCreateList = (film?: Film) =>
     {
         showModal(<CreateListForm filmProp={film} />, 'Create List', ModalSize.Medium);
     }
-
-    const handleAddToListClick = async () =>
-    {
-        if (film)
-        {
-            const result = await listService.addFilmToList({ listId: list.id, film: film });
-            if (result.success)
-            {
-                const listResult = await listService.getList({ listId: list.id });
-                if (listResult.success)
-                {
-                    showModal(<UserList list={listResult.data.list} />, "View List", ModalSize.Large);
-                }
-            }
-            else if (result.success === false)
-            {
-                console.error(`Failed to add film to list: ${ list.name }`, result.error);
-            }
-        }
-    };
 
     if (!film && !list)
     {
@@ -119,7 +85,7 @@ export function UserListItem({ list, film }: Props)
     else if (list)
     {
         return (
-            <div key={list.id} className="list-item" onClick={film ? () => handleAddToListClick() : () => handleListClick()}>
+            <a href={`/lists/${user.name.toLowerCase().replace(/\s+/g, '-')}/${list.id}/${list.name.toLowerCase().replace(/\s+/g, '-')}`} key={list.id} className="list-item">
                 <div className={`films-preview ${ list.films.length < 4 ? 'empty' : '' }`}>
                     {list.films.slice(0, 4).map((listFilm) => (
                         <div className="films-preview-item" key={listFilm.id}>
@@ -136,12 +102,12 @@ export function UserListItem({ list, film }: Props)
                 </div>
                 <div className="list-details">
                     <div className="list-name">{list.name}</div>
-                    <div className="list-description">{list.description}</div>
                     <div className="list-privacy">
                         <i className={getPrivacyInfo(list.privacyType).icon}></i> {getPrivacyInfo(list.privacyType).label}
                     </div>
+                    <div className="list-description">{list.description}</div>
                 </div>
-            </div>
+            </a>
         );
     }
 }

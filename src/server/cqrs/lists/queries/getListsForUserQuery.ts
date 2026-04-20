@@ -4,12 +4,14 @@ import { Result } from "../../result";
 import { Film } from "../../../../shared/models/films/Film";
 import { FilmList } from "../../../../shared/models/lists/FilmList";
 import { orderBy } from "lodash";
+import { ListPrivacyType } from "../../../../shared/models/lists/ListPrivacyType";
 
 const prisma = new PrismaClient();
 
 interface GetListsForUserQueryRequest
 {
     userId: number;
+    currentUserId?: number;
 }
 
 interface GetListsForUserQueryResponse
@@ -46,7 +48,7 @@ export class GetListsForUserQueryHandler
             }
         });
 
-        const response: FilmList[] = orderBy(lists, ['createdDate'], ['asc']).map(list => ({
+        let response: FilmList[] = orderBy(lists, ['createdDate'], ['asc']).map(list => ({
             id: list.id,
             name: list.name,
             description: list.description,
@@ -71,6 +73,11 @@ export class GetListsForUserQueryHandler
                 metacritic_vote_count: filmList.film.metacriticVoteCount
             } as Film))
         }));
+
+        if (request.userId !== request.currentUserId)
+        {
+            response = response.filter(list => list.privacyType === ListPrivacyType.Public);
+        }
 
         return {
             success: true,

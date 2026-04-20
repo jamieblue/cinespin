@@ -43,7 +43,8 @@ export class GetListByIDQueryHandler
                             }
                         }
                     }
-                }
+                },
+                user: true
             }
         });
 
@@ -52,7 +53,7 @@ export class GetListByIDQueryHandler
             return { success: false, error: "List not found" };
         }
 
-        if (!request.userId && list.privacyType === ListPrivacyType.Private)
+        if (list.userId !== request.userId && list.privacyType === ListPrivacyType.Private)
         {
             return { success: false, error: "This list is private" };
         }
@@ -88,6 +89,11 @@ export class GetListByIDQueryHandler
                             name: genreFilm.genre.name,
                         }) as Genre)
                     }) as Film),
+                    user: {
+                        id: list.user.id,
+                        name: list.user.name,
+                        email: list.user.email
+                    }
                 }
             },
         };

@@ -1,0 +1,1 @@
+export const METACRITIC_FILM_BASE_URL = "https://www.metacritic.com/movie";

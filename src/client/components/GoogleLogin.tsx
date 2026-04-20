@@ -7,7 +7,8 @@ export function GoogleLogin()
     const handleLogin = (e: MouseEvent) =>
     {
         e.stopPropagation();
-        window.location.href = authService.getAuthURL();
+        const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `${ authService.getAuthURL() }?redirect=${ redirectUrl }`;
     };
 
     return (

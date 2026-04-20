@@ -26,7 +26,6 @@ export function PrismaErrorHandler(err: unknown): string | null
         case "P2011": // Null constraint violation
             return "A required value was null.";
 
-        // Add any other codes you care about here
         // https://www.prisma.io/docs/reference/api-reference/error-reference
 
         default:

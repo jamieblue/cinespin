@@ -1,8 +1,9 @@
+import { FilmList } from "../lists/FilmList";
+
 export type User = {
     id: number;
-    googleId: string;
+    googleId?: string;
     email: string;
     name: string;
-    createdDate: Date;
-    updatedDate: Date;
+    lists?: FilmList[];
 };

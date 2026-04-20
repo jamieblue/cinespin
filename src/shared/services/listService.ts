@@ -1,4 +1,4 @@
-import { AddFilmToListRequest, AddFilmToListResponse, CreateListRequest, CreateListResponse, GetListRequest, GetListResponse, GetMyListsResponse, RemoveFilmFromListRequest, RemoveFilmFromListResponse } from "../models/lists/ListApiRequests";
+import { AddFilmToListRequest, AddFilmToListResponse, CheckFilmInListsQueryRequest, CheckFilmInListsQueryResponse, CreateListRequest, CreateListResponse, GetListRequest, GetListResponse, GetMyListsResponse, RemoveFilmFromListRequest, RemoveFilmFromListResponse } from "../models/lists/ListApiRequests";
 import { Result } from "../models/api/Result";
 import { apiClient } from "./apiClient";
 import { ListPrivacyType } from "../models/lists/ListPrivacyType";
@@ -24,6 +24,11 @@ class ListService
         return await apiClient.get<GetMyListsResponse>('/lists/my-lists');
     }
 
+    async getListsForUser(userId: number, currentUserId: number): Promise<Result<GetMyListsResponse>>
+    {
+        return await apiClient.get<GetMyListsResponse>(`/lists/user-lists/${ userId }?currentUserId=${ currentUserId }`);
+    }
+
     async createList(name: string, description: string, privacy: ListPrivacyType, film?: Film): Promise<Result<CreateListResponse>>
     {
         const request: CreateListRequest = {
@@ -44,6 +49,11 @@ class ListService
     async getList(request: GetListRequest): Promise<Result<GetListResponse>>
     {
         return await apiClient.get<GetListResponse>(`/lists/get-list/${ request.listId }`);
+    }
+
+    async checkFilmsInLists(request: CheckFilmInListsQueryRequest): Promise<Result<CheckFilmInListsQueryResponse>>
+    {
+        return await apiClient.get<CheckFilmInListsQueryResponse>(`/lists/check-films-in-lists?tmdbIds=${ request.tmdbIds.join(',') }&userId=${ request.userId }`);
     }
 
     async getListBySlug(slug: string): Promise<Result<GetListResponse>>

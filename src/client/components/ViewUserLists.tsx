@@ -3,7 +3,7 @@
 import { useState, useEffect } from "preact/hooks";
 import { FilmList } from "../../shared/models/lists/FilmList";
 import { listService } from "../../shared/services/listService";
-import { UserListItem } from "./UserListItem";
+import { UserListItem } from "./lists/UserListItem";
 
 export function ViewUserLists()
 {

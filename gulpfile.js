@@ -29,8 +29,7 @@ const paths = {
 // Native esbuild for better reload control
 const esbuildNative = require("esbuild");
 
-function bundleClient()
-{
+function bundleClient() {
     return esbuildNative
         .build({
             entryPoints: [paths.client.entry],
@@ -41,15 +40,20 @@ function bundleClient()
             target: ["es2020"],
             loader: { ".tsx": "tsx", ".ts": "ts" },
             define: { "process.env.NODE_ENV": '"development"' },
+
+            // ✅ Add this for React Query / Preact compatibility
+            alias: {
+                react: require.resolve("preact/compat"),
+                "react-dom": require.resolve("preact/compat"),
+                "react-dom/test-utils": require.resolve("preact/test-utils"),
+                "react/jsx-runtime": require.resolve("preact/jsx-runtime"),
+            },
         })
-        .then(() =>
-        {
-            // Report the size of the bundle
+        .then(() => {
             return gulp.src(`${paths.dest.clientJS}/bundle.js`)
                 .pipe(size({ showFiles: true }));
         })
-        .then(() =>
-        {
+        .then(() => {
             browserSync.reload();
         });
 }

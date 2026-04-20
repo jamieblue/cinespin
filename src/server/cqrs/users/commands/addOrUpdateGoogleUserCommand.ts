@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Result } from "../../result";
 import { PrismaErrorHandler } from "../../../../shared/util/prismaErrorHandler";
-import { User } from "src/shared/models/users/user";  // Use the path mapping instead
+import { User } from "../../../../shared/models/users/user";
 import * as dateTimeProvider from "../../../../shared/util/dateTimeProvider";
 import { ListPrivacyType } from "../../../../shared/models/lists/ListPrivacyType";
 import * as listHelper from "../../../../shared/util/listHelper";
@@ -29,6 +29,10 @@ export class AddOrUpdateGoogleUserCommandHandler
                 };
             }
 
+            const existingUser = await prisma.users.findUnique({
+                where: { googleId: request.googleId }
+            });
+
             const user = await prisma.users.upsert({
                 where: { googleId: request.googleId },
                 update: {
@@ -47,15 +51,7 @@ export class AddOrUpdateGoogleUserCommandHandler
                 },
             });
 
-            // Check if user already has a watchlist
-            const existingWatchlist = await prisma.lists.findFirst({
-                where: {
-                    userId: user.id,
-                    name: 'Watchlist'
-                }
-            });
-
-            if (!existingWatchlist)
+            if (!existingUser)
             {
                 // Create watchlist only if it doesn't exist
                 await prisma.lists.create({
@@ -63,8 +59,32 @@ export class AddOrUpdateGoogleUserCommandHandler
                         userId: user.id,
                         name: 'Watchlist',
                         description: 'My watchlist',
-                        slug: await listHelper.generateUniqueSlug(user.name, 'watchlist'),
-                        privacyType: Number(ListPrivacyType.Private),
+                        slug: await listHelper.generateUniqueSlug(user.name, user.id, 'watchlist'),
+                        privacyType: Number(ListPrivacyType.Public),
+                        createdDate: dateTimeProvider.now(),
+                        updatedDate: dateTimeProvider.now(),
+                    }
+                });
+
+                await prisma.lists.create({
+                    data: {
+                        userId: user.id,
+                        name: 'Liked',
+                        description: 'My liked films',
+                        slug: await listHelper.generateUniqueSlug(user.name, user.id, 'liked'),
+                        privacyType: Number(ListPrivacyType.Public),
+                        createdDate: dateTimeProvider.now(),
+                        updatedDate: dateTimeProvider.now(),
+                    }
+                });
+
+                await prisma.lists.create({
+                    data: {
+                        userId: user.id,
+                        name: 'Disliked',
+                        description: 'My disliked films',
+                        slug: await listHelper.generateUniqueSlug(user.name, user.id, 'disliked'),
+                        privacyType: Number(ListPrivacyType.Public),
                         createdDate: dateTimeProvider.now(),
                         updatedDate: dateTimeProvider.now(),
                     }

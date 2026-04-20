@@ -5,13 +5,15 @@
 		"outDir": "dist/public/js",
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact",
-		"baseUrl": "src",
-        "incremental": false
+        "incremental": false,
+		"paths": {
+			"shared/*": ["./src/shared/*"]
+		}
 	},
 	"include": [
 		"src/client",
 		"src/shared/models",
 		"src/shared/util",
-		"src/shared/constants"
-, "src/shared/services/listService.ts"	]
+		"src/shared/constants", 
+        "src/shared/services"	]
 }
