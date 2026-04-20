@@ -4,7 +4,7 @@
 export function SelectedFilmDisplayLoadingPlaceholder()
 {
     return (
-        <div class="selected-film-container">
+        <div class="selected-film-container placeholder">
             <div class="image-container">
                 <div class="flip-card">
                     <div className="loading-placeholder-filler">

@@ -88,7 +88,7 @@ export function Homepage()
     {
         try
         {
-            let next: Film | undefined;
+            let next: Film = null as any;
             switch (filmType)
             {
                 case RandomFilmType.Good:
@@ -117,7 +117,9 @@ export function Homepage()
                     }
             }
 
-            const targetUrl = `/films/${ encodeURIComponent(GenerateFilmSlug(next.title)) }/${ encodeURIComponent(String(next.tmdb_id)) }`;
+            if (!next) return;
+
+            const targetUrl = `/films/${ encodeURIComponent(GenerateFilmSlug(next?.title ?? "")) }/${ encodeURIComponent(String(next.tmdb_id)) }`;
             route(targetUrl);
 
             scrollToTop();

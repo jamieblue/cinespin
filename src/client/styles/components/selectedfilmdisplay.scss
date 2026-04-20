@@ -92,6 +92,10 @@
     height: auto;
     width: auto;
 
+    &.placeholder {
+        margin-left: 8.5vw;
+    }
+
     .image-container
     {
         font-size: 18px;

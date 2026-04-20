@@ -6,7 +6,7 @@ import { useUserSettings } from "../../contexts/UserSettingsContext";
 
 type Props = {
     youtubeKey?: string;
-    backdropUrl: string;
+    backdropUrl?: string;
     startAt?: number;
     duration?: number;
     className?: string;

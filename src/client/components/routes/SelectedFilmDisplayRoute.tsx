@@ -1,19 +1,19 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource preact */
-import { useEffect } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { SelectedFilmDisplay } from '../films/SelectedFilmDisplay';
-import { useSelectedFilm } from '../../contexts/SelectedFilmContext';
 import { filmService } from '../../../shared/services/filmService';
 import { Film } from '../../../shared/models/films/Film';
 
 export function SelectedFilmDisplayRoute(props: { slug?: string; filmId?: string; })
 {
-    const [selectedFilm, setSelectedFilm] = useSelectedFilm();
+    const [selectedFilm, setSelectedFilm] = useState<Film | null>(null);
 
     useEffect(() =>
     {
         const loadFromUrl = async () =>
         {
+            setSelectedFilm(null);
             const filmId = props.filmId;
             if (!filmId) return;
 
@@ -26,6 +26,7 @@ export function SelectedFilmDisplayRoute(props: { slug?: string; filmId?: string
 
                 if (result.success && result.data?.film)
                 {
+                    console.log('Loaded film for route:', result.data.film);
                     setSelectedFilm(result.data.film);
                 }
                 else if (result.success === false)
@@ -43,6 +44,6 @@ export function SelectedFilmDisplayRoute(props: { slug?: string; filmId?: string
     }, [props.filmId]);
 
     return (
-        <SelectedFilmDisplay showRecommendationsProp={true} />
+        <SelectedFilmDisplay showRecommendationsProp={true} selectedFilmProp={selectedFilm} />
     );
 }

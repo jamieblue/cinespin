@@ -10,7 +10,6 @@ import * as IMDBconstants from "../../../shared/constants/imdb";
 import { YOUTUBE_BASE_URL } from "../../../shared/constants/youtube";
 import { getRatingColor } from "../../../shared/util/metacriticHelper";
 import { filmService } from "../../../shared/services/filmService";
-import { useSelectedFilm } from "../../contexts/SelectedFilmContext";
 import { useModal } from "../../contexts/ModalContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { ModalSize } from "../../../shared/models/modals/ModalSize";
@@ -19,7 +18,6 @@ import { route } from "preact-router";
 import { GenerateFilmSlug } from "../../../shared/util/filmHelper";
 import { FilmGrid } from "./FilmCarousel";
 import { SelectedFilmDisplayLoadingPlaceholder } from "./SelectedFilmDisplayLoadingPlaceholder";
-import { scrollToTop } from "../../../shared/util/scrollHelper";
 import { useSearch } from "../../contexts/SearchContext";
 import { METACRITIC_FILM_BASE_URL } from "../../../shared/constants/metacritic";
 import { BackgroundTrailer } from "./BackgroundTrailer";
@@ -38,16 +36,16 @@ const IMDB_FILM_BASE_URL = IMDBconstants.IMDB_FILM_BASE_URL;
 
 type Props = {
     showRecommendationsProp?: boolean;
+    selectedFilmProp?: Film | null;
 };
 
-export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
+export function SelectedFilmDisplay({ showRecommendationsProp = false, selectedFilmProp }: Props)
 {
     //#region State
     const { user } = useAuth();
     const { showModal } = useModal();
     const { setSearchQuery } = useSearch();
-    const [selectedFilm,] = useSelectedFilm();
-    const [currentFilm, setCurrentFilm] = useState<Film | null>(null);
+    const [currentFilm, setCurrentFilm] = useState<Film | null>(selectedFilmProp ?? null);
     const [showPlaceholder, setShowPlaceholder] = useState(false);
     const [showRecommendations, setShowRecommendations] = useState(showRecommendationsProp);
     const { isMobile } = useWindowSize();
@@ -58,29 +56,17 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
     //#region Effects
     useEffect(() =>
     {
-        const next = selectedFilm;
-
-        if (!next)
+        if (selectedFilmProp)
         {
-            setCurrentFilm(null);
-            return;
-        }
-
-        if (!currentFilm)
-        {
-            setCurrentFilm(next);
             setShowPlaceholder(false);
-            return;
+            setCurrentFilm(selectedFilmProp);
         }
-
-        if (currentFilm?.tmdb_id === next.tmdb_id)
-        {
-            return;
+        else {
+            setShowPlaceholder(true);
+            setCurrentFilm(null);
         }
+    }, [selectedFilmProp]);
 
-        setCurrentFilm(next);
-        scrollToTop();
-    }, [selectedFilm]);
     //#endregion
 
     //#region Event Handlers
@@ -91,6 +77,9 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
         try
         {
             let next: Film | null = null;
+            setShowPlaceholder(true);
+            setCurrentFilm(null);
+            
             switch (filmType)
             {
                 case RandomFilmType.Good:
@@ -168,7 +157,7 @@ export function SelectedFilmDisplay({ showRecommendationsProp = false }: Props)
     //#endregion
 
     //#region Render
-    return !currentFilm || !selectedFilm || showPlaceholder ?
+    return !currentFilm || showPlaceholder ?
         <>
             <SelectedFilmDisplayLoadingPlaceholder />
             <FilmGridLoadingPlaceholder title="You might also like..." />

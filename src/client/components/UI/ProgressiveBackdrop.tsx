@@ -4,7 +4,7 @@ import { useState, useEffect } from "preact/hooks";
 import { useWindowSize } from "../../hooks/UseWindowsize";
 
 type ProgressiveBackdropProps = {
-    backdropPath: string;
+    backdropPath?: string;
     className?: string;
 };
 

@@ -63,9 +63,7 @@ function InnerApp()
 document.addEventListener("DOMContentLoaded", () =>
 {
     render(
-        <SelectedFilmProvider>
-            <App />
-        </SelectedFilmProvider>,
+            <App />,
         document.body
     );
 });

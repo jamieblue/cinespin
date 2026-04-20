@@ -4,14 +4,13 @@ import { useState, useMemo, useEffect, useRef } from "preact/hooks";
 import { FilmGrid } from "./FilmCarousel";
 import { filmService } from "../../../shared/services/filmService";
 import { Film } from "../../../shared/models/films/Film";
-import { useSelectedFilm } from "../../contexts/SelectedFilmContext";
 import { SelectedFilmDisplay } from "../films/SelectedFilmDisplay";
 import { useSearch } from "../../contexts/SearchContext";
 import { FilmGridLoadingPlaceholder } from "./FilmGridLoadingPlaceHolder";
 
 export function SearchResults()
 {
-    const [selectedFilm, setSelectedFilm] = useSelectedFilm();
+    const [selectedFilm, setSelectedFilm] = useState<Film | null>(null);
     const { searchQuery } = useSearch();
     const [searchResults, setSearchResults] = useState<Film[]>([]);
     const [loading, setLoading] = useState(false);
@@ -137,7 +136,7 @@ export function SearchResults()
     return (
         <>
             <div id="selectedFilm">
-                <SelectedFilmDisplay showRecommendationsProp={false} />
+                <SelectedFilmDisplay showRecommendationsProp={false} selectedFilmProp={selectedFilm} />
             </div>
             <div class="container" id="films">
                 {filmLists}
