@@ -22,13 +22,11 @@ const getApiBaseUrl = () =>
 
     if (isLocalNetwork)
     {
-        // Use the same hostname as the frontend with port 3001
         const hostname = window.location?.hostname || "localhost";
         return `http://${ hostname }:3001`;
     }
 
-    // Production - use relative URL (same domain)
-    return "";
+    return "/";
 };
 
 const axiosInstance = axios.create({
