@@ -11,7 +11,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.API_PORT || 3001;
+const PORT = process.env.PORT || process.env.API_PORT || 3001;
 
 const allowedOrigins = process.env.CLIENT_ORIGINS?.split(',') || ['http://localhost:3000'];
 
@@ -40,7 +40,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Static files
-const publicPath = path.join(__dirname, 'public');
+const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
 // API routes
@@ -50,7 +50,6 @@ app.use('/lists', lists);
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
-// 👇 Catch-all: send index.html for SPA routes
 app.get(/.*/, (req, res) =>
 {
     res.sendFile(path.join(publicPath, 'index.html'));

@@ -123,18 +123,42 @@ function watch() {
 }
 
 
+function bundleClientProd() {
+    return esbuildNative.build({
+        entryPoints: [paths.client.entry],
+        bundle: true,
+        outfile: `${paths.dest.clientJS}/bundle.js`,
+        minify: true,
+        target: ["es2020"],
+        loader: { ".tsx": "tsx", ".ts": "ts" },
+        define: { "process.env.NODE_ENV": '"production"' },
+        alias: {
+            react: require.resolve("preact/compat"),
+            "react-dom": require.resolve("preact/compat"),
+            "react-dom/test-utils": require.resolve("preact/test-utils"),
+            "react/jsx-runtime": require.resolve("preact/jsx-runtime"),
+        },
+    });
+}
+
 // Tasks
 const build = gulp.series(
     gulp.parallel(bundleClient, styles, staticAssets, serverScripts)
+);
+
+const buildProd = gulp.series(
+    gulp.parallel(bundleClientProd, styles, staticAssets, serverScripts)
 );
 
 const dev = gulp.series(build, watch);
 
 // Export tasks
 exports.bundleClient = bundleClient;
+exports.bundleClientProd = bundleClientProd;
 exports.styles = styles;
 exports.staticAssets = staticAssets;
 exports.serverScripts = serverScripts;
 exports.watch = watch;
 exports.build = build;
+exports.buildProd = buildProd;
 exports.default = dev;
