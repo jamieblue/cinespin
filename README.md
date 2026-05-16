@@ -1,5 +1,5 @@
 # CineSpin
-**CineSpin** is your go to movie picker when you just can’t decide what to watch. You can search for a specific film, check out what’s popular or coming soon, or let the app spin the wheel and surprise you with either a great film, a random choice, or even a so bad it’s good option. You can also create your own custom lists so the picks match your taste. CineSpin makes movie night simple, fun, and stress free.
+[**CineSpin**](https://www.cinespin.co.uk/) is your go to movie picker when you just can’t decide what to watch. You can search for a specific film, check out what’s popular or coming soon, or let the app spin the wheel and surprise you with either a great film, a random choice, or even a so bad it’s good option. You can also create your own custom lists so the picks match your taste. CineSpin makes movie night simple, fun, and stress free.
 
 Cinespin is currently **in development** and is still very much a work in progress, it is not commercial. It uses TMDB to source all of it's data and images, along with a community made imdb API. 
 
