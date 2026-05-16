@@ -9,6 +9,7 @@ The main goals in developing CineSpin is to learn, to gain a better understandin
 CineSpin as a concept provides an exceptional learning experience as it involves balancing snappy and responsive web design with a large amount of API calls, images and videos, this provided a great challenge.
 
 **Learning experiences:**
+
 The large number of API calls to two major APIs, those being TMDB and the community made IMDb API means I need to effectively balance UX so that the website is still response and interactible as soon as possible. I used multiple techniques to ensure this:
 - Placeholders are used so that there is always content on the page even when API calls haven't completed, this improves percieved performance while also avoiding frustrating content shift that plagues many websites
 - API calls are bottlenecked to avoid server errors, though when making calls to the IMDb API this still needs some work
