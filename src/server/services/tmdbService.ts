@@ -58,7 +58,8 @@ const tmdbClient = axios.create({
 });
 
 const tmdbLimiter = new Bottleneck({
-    minTime: 20, // 1 request every 20ms (~50/sec)
+    minTime: 20,       // 1 request every 20ms (~50/sec)
+    maxConcurrent: 20, // max 20 simultaneous connections
 });
 
 const get = tmdbLimiter.wrap(
